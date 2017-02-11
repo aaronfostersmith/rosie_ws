@@ -10,7 +10,7 @@
     <param name="ymin" value="-20"/>
     <param name="ymax" value="20"/>
     <remap from="scan" to="rosie/laser/scan"/>
-    <param name="base_frame" value="chassis" />
+    <param name="base_frame" value="base_link" />
 
     <param name="linearUpdate" value="0.5"/>
     <param name="angularUpdate" value="0.436"/>

@@ -63,9 +63,9 @@
 
 
     <joint name="${lr}_wheel_hinge" type="continuous">
-      <parent link="chassis"/>
+      <parent link="base_link"/>
       <child link="${lr}_wheel"/>
-    <origin xyz="${-wheelPos+chassisLength/2} ${tY*wheelWidth/2+tY*chassisWidth/2} ${wheelRadius}" rpy="0 0 0" />
+    <origin xyz="${-wheelPos+base_linkLength/2} ${tY*wheelWidth/2+tY*base_linkWidth/2} ${wheelRadius}" rpy="0 0 0" />
       <axis xyz="0 1 0" rpy="0 0 0" />
       <limit effort="10000" velocity="10000"/>
       <joint_properties damping="0.0" friction="0.0"/>

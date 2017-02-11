@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <robot>
 
+  <gazebo reference="caster">
+      <mu1 value="0" />
+      <mu2 value="0" />
+  </gazebo>   
+	
   <!--gazebo reference="left_wheel_hinge">
       <mu1 value="10000.0" />
       <mu2 value="10000.0" />
@@ -25,18 +30,18 @@
       <updateRate>10</updateRate>
       <leftJoint>left_wheel_hinge</leftJoint>
       <rightJoint>right_wheel_hinge</rightJoint>
-      <wheelSeparation>0.4</wheelSeparation>
-      <wheelDiameter>0.2</wheelDiameter>
+      <wheelSeparation>0.3</wheelSeparation>
+      <wheelDiameter>0.064</wheelDiameter>
       <torque>10</torque>
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
-      <robotBaseFrame>chassis</robotBaseFrame>
+      <robotBaseFrame>base_link</robotBaseFrame>
     </plugin>
   </gazebo>
 
 
-  <gazebo reference="chassis">
+  <gazebo reference="base_link">
     <material>Gazebo/Orange</material>
   </gazebo>
 
