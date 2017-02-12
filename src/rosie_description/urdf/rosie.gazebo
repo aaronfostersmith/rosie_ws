@@ -1,38 +1,22 @@
 <?xml version="1.0"?>
 <robot>
-
-  <gazebo reference="caster">
-      <mu1 value="0" />
-      <mu2 value="0" />
-  </gazebo>   
 	
-  <!--gazebo reference="left_wheel_hinge">
-      <mu1 value="10000.0" />
-      <mu2 value="10000.0" />
-      <kp value="100000.0" />
-      <kd value="0.00001" />
-      <maxVel value="1.0" />
-      <minDepth value="0.0001" />
-  </gazebo>    
-  <gazebo reference="right_wheel_hinge">
-      <mu1 value="10000.0" />
-      <mu2 value="10000.0" />
-      <kp value="100000.0" />
-      <kd value="0.00001" />
-      <maxVel value="1.0" />
-      <minDepth value="0.0001" />
-  </gazebo-->    
+ <gazebo>
+   <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+     <robotNamespace>/mybot</robotNamespace>
+   </plugin>
+ </gazebo>
 
   <gazebo>
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      <legacyMode>false</legacyMode>
+	  <legacyMode>false</legacyMode>
       <alwaysOn>true</alwaysOn>
-      <updateRate>10</updateRate>
+      <updateRate>20</updateRate>
       <leftJoint>left_wheel_hinge</leftJoint>
       <rightJoint>right_wheel_hinge</rightJoint>
-      <wheelSeparation>0.3</wheelSeparation>
-      <wheelDiameter>0.064</wheelDiameter>
-      <torque>10</torque>
+      <wheelSeparation>${wheelBase}</wheelSeparation>
+      <wheelDiameter>${wheelRadius*2}</wheelDiameter>
+      <torque>20</torque>
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
@@ -40,51 +24,15 @@
     </plugin>
   </gazebo>
 
+	 	
+  <gazebo reference="caster_wheel">
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>  
 
   <gazebo reference="base_link">
     <material>Gazebo/Orange</material>
-  </gazebo>
-
-  <gazebo reference="left_wheel">
-    <material>Gazebo/Blue</material>
-  </gazebo>
-
-  <gazebo reference="right_wheel">
-    <material>Gazebo/Blue</material>
-  </gazebo>
-
-
-  <gazebo reference="camera">
-    <material>Gazebo/Green</material>
-    <sensor type="camera" name="camera1">
-      <update_rate>30.0</update_rate>
-      <camera name="head">
-        <horizontal_fov>1.3962634</horizontal_fov>
-        <image>
-          <width>800</width>
-          <height>800</height>
-          <format>R8G8B8</format>
-        </image>
-        <clip>
-          <near>0.02</near>
-          <far>300</far>
-        </clip>
-      </camera>
-      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
-        <alwaysOn>true</alwaysOn>
-        <updateRate>0.0</updateRate>
-        <cameraName>rosie/camera1</cameraName>
-        <imageTopicName>image_raw</imageTopicName>
-        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-        <frameName>camera</frameName>
-        <hackBaseline>0.07</hackBaseline>
-        <distortionK1>0.0</distortionK1>
-        <distortionK2>0.0</distortionK2>
-        <distortionK3>0.0</distortionK3>
-        <distortionT1>0.0</distortionT1>
-        <distortionT2>0.0</distortionT2>
-      </plugin>
-    </sensor>
   </gazebo>
 
   <!-- hokuyo -->
@@ -92,19 +40,19 @@
     <sensor type="gpu_ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
       <visualize>false</visualize>
-      <update_rate>40</update_rate>
+      <update_rate>5</update_rate>
       <ray>
         <scan>
           <horizontal>
-            <samples>720</samples>
+            <samples>256</samples>
             <resolution>1</resolution>
-            <min_angle>-1.570796</min_angle>
-            <max_angle>1.570796</max_angle>
+            <min_angle>${-PI}</min_angle>
+            <max_angle>${PI}</max_angle>
           </horizontal>
         </scan>
         <range>
           <min>0.10</min>
-          <max>30.0</max>
+          <max>4.0</max>
           <resolution>0.01</resolution>
         </range>
         <noise>
@@ -114,7 +62,7 @@
                stddev of 0.01m will put 99.7% of samples within 0.03m of the true
                reading. -->
           <mean>0.0</mean>
-          <stddev>0.01</stddev>
+          <stddev>0.04</stddev>
         </noise>
       </ray>
       <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
@@ -122,6 +70,18 @@
         <frameName>hokuyo</frameName>
       </plugin>
     </sensor>
+  </gazebo>
+	
+<!-- imu -->
+	<gazebo>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+      <alwaysOn>true</alwaysOn>
+      <bodyName>imu_link</bodyName>
+      <topicName>imu</topicName>
+      <serviceName>imu_service</serviceName>
+      <gaussianNoise>2.89e-08</gaussianNoise>
+      <updateRate>20.0</updateRate>
+    </plugin>
   </gazebo>
 
 </robot>
