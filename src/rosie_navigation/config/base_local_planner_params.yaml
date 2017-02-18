@@ -15,11 +15,11 @@ DWAPlannerROS:
   xy_goal_tolerance: .1
 
   goal_distance_bias: 32
-  path_distance_bias: 64
-  occdist_scale: 0.1
+  path_distance_bias: 54
+  occdist_scale: 1
 
   
-  sim_time: 1.5
+  sim_time: 1
 
   
   holonomic_robot: false
