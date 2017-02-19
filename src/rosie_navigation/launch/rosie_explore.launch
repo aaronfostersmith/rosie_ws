@@ -7,8 +7,8 @@
 
     <node pkg="frontier_exploration" type="explore_server" name="explore_server" output="screen" >
 
-        <param name="frequency" type="double" value="2.0"/>
-        <param name="goal_aliasing" type="double" value="$(arg sensor_range)"/>
+    <param name="frequency" value="1"/>
+    <param name="goal_aliasing" value="1"/>
 
         #All standard costmap_2d parameters as in move_base, other than BoundedExploreLayer
         <rosparam ns="explore_costmap" subst_value="true">
@@ -22,7 +22,7 @@
             #must match incoming static map
             global_frame: map
             robot_base_frame: base_link
-            resolution: 0.05
+            resolution: 0.1
 
             rolling_window: false
             track_unknown_space: true
@@ -43,7 +43,7 @@
 
             explore_boundary:
                 resize_to_boundary: false
-                frontier_travel_point: middle
+                frontier_travel_point: centroid
                 #set to false for gmapping, true if re-exploring a known area
                 explore_clear_space: false
 
@@ -52,7 +52,7 @@
                 laser: {data_type: LaserScan, clearing: true, marking: true, topic: scan, inf_is_valid: true, raytrace_range: $(arg sensor_range), obstacle_range: $(arg sensor_range)}
 
             inflation:
-                inflation_radius: 0.15
+                inflation_radius: 0.5
       </rosparam>
     </node>
 
