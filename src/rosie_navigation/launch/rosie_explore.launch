@@ -1,14 +1,14 @@
 <launch>
 
     <!-- Set to your sensor's range -->
-    <arg name="sensor_range" default="1.0"/>
+    <arg name="sensor_range" default="3.0"/>
 
     <node pkg="frontier_exploration" type="explore_client" name="explore_client" output="screen"/>
 
     <node pkg="frontier_exploration" type="explore_server" name="explore_server" output="screen" >
 
-    <param name="frequency" value="1"/>
-    <param name="goal_aliasing" value="1"/>
+    <param name="frequency" value="5"/>
+    <param name="goal_aliasing" type="double" value="$(arg sensor_range)"/>
 
         #All standard costmap_2d parameters as in move_base, other than BoundedExploreLayer
         <rosparam ns="explore_costmap" subst_value="true">
@@ -42,15 +42,14 @@
                 subscribe_to_updates: true
 
             explore_boundary:
-                resize_to_boundary: false
+                resize_to_boundary: true
                 frontier_travel_point: centroid
                 #set to false for gmapping, true if re-exploring a known area
-                explore_clear_space: false
+                explore_clear_space: true
 
             sensor:
-                observation_sources: rosie/laser/scan
-                laser: {data_type: LaserScan, clearing: true, marking: true, topic: scan, inf_is_valid: true, raytrace_range: $(arg sensor_range), obstacle_range: $(arg sensor_range)}
-
+                observation_sources: laser
+                laser: {data_type: LaserScan, clearing: true, marking: true, topic: /rosie/laser/scan, inf_is_valid: false, raytrace_range: $(arg sensor_range), obstacle_range: $(arg sensor_range)}
             inflation:
                 inflation_radius: 0.5
       </rosparam>

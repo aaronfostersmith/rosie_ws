@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Global Costmap1
         - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 745
@@ -100,7 +101,7 @@ Visualization Manager:
       Color Scheme: costmap
       Draw Behind: true
       Enabled: true
-      Name: Map
+      Name: Global Costmap
       Topic: /move_base/global_costmap/costmap
       Unreliable: false
       Value: true
@@ -192,7 +193,7 @@ Visualization Manager:
       Color Scheme: costmap
       Draw Behind: false
       Enabled: true
-      Name: Map
+      Name: Local Costmap
       Topic: /move_base/local_costmap/costmap
       Unreliable: false
       Value: true
@@ -221,7 +222,7 @@ Visualization Manager:
       Max Color: 255; 255; 255
       Max Intensity: 100
       Min Color: 0; 0; 0
-      Min Intensity: 100
+      Min Intensity: 50
       Name: PointCloud2
       Position Transformer: XYZ
       Queue Size: 10
@@ -239,7 +240,7 @@ Visualization Manager:
       Color Scheme: costmap
       Draw Behind: false
       Enabled: true
-      Name: Map
+      Name: Exploration Costmap
       Topic: /explore_server/explore_costmap/costmap
       Unreliable: false
       Value: true
