@@ -20,7 +20,7 @@ DWAPlannerROS:
   occdist_scale: 1
 
   
-  sim_time: 1.5
+  sim_time: 1
 
   
   holonomic_robot: false

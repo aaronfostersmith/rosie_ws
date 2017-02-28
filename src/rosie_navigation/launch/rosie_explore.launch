@@ -16,7 +16,7 @@
             robot_radius: 0.20
 
             transform_tolerance: 0.5
-            update_frequency: 2
+            update_frequency: 1
             publish_frequency: 1
 
             #must match incoming static map
