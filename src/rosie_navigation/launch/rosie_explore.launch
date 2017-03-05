@@ -13,7 +13,7 @@
         #All standard costmap_2d parameters as in move_base, other than BoundedExploreLayer
         <rosparam ns="explore_costmap" subst_value="true">
             footprint: [[0.15, -0.125], [-0.15,-0.125], [-0.15, 0.125], [0.15, 0.125]]
-            robot_radius: 0.20
+            robot_radius: 0.15
 
             transform_tolerance: 0.5
             update_frequency: 1
@@ -22,7 +22,7 @@
             #must match incoming static map
             global_frame: map
             robot_base_frame: base_link
-            resolution: 0.05
+            resolution: 0.025
 
             rolling_window: false
             track_unknown_space: true

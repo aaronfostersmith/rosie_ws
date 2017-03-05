@@ -6,7 +6,6 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /Global Costmap1
         - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 745
@@ -100,11 +99,11 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: true
-      Enabled: true
+      Enabled: false
       Name: Global Costmap
       Topic: /move_base/global_costmap/costmap
       Unreliable: false
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -128,7 +127,7 @@ Visualization Manager:
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.0500000007
+      Size (m): 0.100000001
       Style: Flat Squares
       Topic: /rosie/laser/scan
       Unreliable: false
@@ -192,11 +191,11 @@ Visualization Manager:
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: true
+      Enabled: false
       Name: Local Costmap
       Topic: /move_base/local_costmap/costmap
       Unreliable: false
-      Value: true
+      Value: false
     - Class: rviz/Marker
       Enabled: false
       Marker Topic: /exploration_polygon_marker
@@ -276,7 +275,7 @@ Visualization Manager:
         Value: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Scale: 25.2821293
+      Scale: 36.9989357
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz)
       X: -4.20920324
