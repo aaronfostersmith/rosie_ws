@@ -12,15 +12,15 @@ DWAPlannerROS:
   acc_lim_th: 1
   acc_lim_x: 0.25
 
-  yaw_goal_tolerance: .05
+  yaw_goal_tolerance: .1
   xy_goal_tolerance: .1
 
   goal_distance_bias: 32
-  path_distance_bias: 54
+  path_distance_bias: 64
   occdist_scale: 2
 
   
-  sim_time: 1.5
+  sim_time: 2
 
   
   holonomic_robot: false
