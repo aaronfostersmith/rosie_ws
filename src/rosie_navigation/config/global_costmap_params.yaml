@@ -5,7 +5,7 @@ global_costmap:
   robot_base_frame: base_link
   update_frequency: 1
   publish_frequency: 1.0
-  resolution: 0.03
+  resolution: 0.1
   static_map: true
   width: 15.0
   height: 15.0
