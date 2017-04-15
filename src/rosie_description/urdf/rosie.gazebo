@@ -42,20 +42,20 @@
     <sensor type="gpu_ray" name="head_hokuyo_sensor">
       <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
-      <update_rate>1</update_rate>
+      <update_rate>0.5</update_rate>
       <ray>
         <scan>
           <horizontal>
-            <samples>40</samples>
+            <samples>64</samples>
             <resolution>1</resolution>
-            <min_angle>${-PI*2/3}</min_angle>
-            <max_angle>${PI*2/3}</max_angle>
+            <min_angle>${-PI}</min_angle>
+            <max_angle>${PI}</max_angle>
           </horizontal>
         </scan>
         <range>
           <min>0.02</min>
           <max>2.00</max>
-          <resolution>0.01</resolution>
+          <resolution>0.005</resolution>
         </range>
         <noise>
           <type>gaussian</type>
@@ -64,7 +64,7 @@
                stddev of 0.01m will put 99.7% of samples within 0.03m of the true
                reading. -->
           <mean>0.0</mean>
-          <stddev>0.05</stddev>
+          <stddev>0.01</stddev>
         </noise>
       </ray>
       <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
