@@ -1,4 +1,17 @@
+/*WIRING:
+TCRT5000:
+  - Black - Gnd
+  - Green - Detector
+  - Yellow - Emitter
 
+VL53L0X:
+  - Red - Vin
+  - Black - Gnd
+  - Yellow - SCL - A5
+  - Orange - SDA - A4
+  - Brown - GPIO1 (UNUSED)
+  - Green - XSHUT (UNUSED)
+*/
 #include <PID_v1.h>
 
 #include <ros.h>
