@@ -6,7 +6,7 @@
 
 double Setpoint, Input, Output;
 double Kp, Ki, Kd;
-PID drivePID(&Input, &Output, &Setpoint, 20, 8, 3, DIRECT);
+PID drivePID(&Input, &Output, &Setpoint, 100, 120, 10, DIRECT);
 PID_ATune driveATune(&Input, &Output);
 
 void setup() {
@@ -15,13 +15,14 @@ void setup() {
   pinMode(MOTOR_PIN, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(ENC_PIN), ENC_ISR, CHANGE);
 
-  Setpoint = 1.0; //Hz
+  Setpoint = 0.75; //Hz
   Input = 0;
 
-  drivePID.SetOutputLimits(84, 255);
+  drivePID.SetOutputLimits(84, 254);
   drivePID.SetSampleTime(1000 / (Setpoint * 8));
   drivePID.SetMode(AUTOMATIC);
   //tune();
+
 }
 
 void tune() {
@@ -53,8 +54,11 @@ long lastime = 0;
 
 void ENC_ISR() {
   long thistime = micros();
-  Input = 1000000.0 / (8 * (thistime - lastime));
-  lastime = thistime;
+  long dt = thistime - lastime;
+  if (dt > 31250) {
+    Input = 1000000.0 / (8 * dt);
+    lastime = thistime;
+  }
 }
 
 // the loop routine runs over and over again forever:
@@ -62,11 +66,11 @@ long lastcalc = 0;
 void loop() {
   drivePID.Compute();
   analogWrite(MOTOR_PIN, Output);
-    Serial.print(Input);
-    Serial.print(", ");
-    Serial.print(Output/128);
-    Serial.print(", ");
-    Serial.println(Setpoint);
+  Serial.print(Input);
+  Serial.print(", ");
+  Serial.print(Output / 128);
+  Serial.print(", ");
+  Serial.println(Setpoint);
 
   delay(15);
 }

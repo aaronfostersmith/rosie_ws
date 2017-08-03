@@ -48,12 +48,12 @@ public:
         }
          if (!ros::param::get("~num_pts", _ls_num_pts))
         {
-        _ls_num_pts= 32;
+        _ls_num_pts= 64;
         ROS_WARN("Failed to get num_pts param. Using 64 pts as default");
         }
          if (!ros::param::get("~time_increment", _ls_time_increment))
         {
-        _ls_time_increment = 0.02;
+        _ls_time_increment = 0.03;
         ROS_WARN("Failed to get time_increment param. Using 0.03 seconds as default");
         }
         

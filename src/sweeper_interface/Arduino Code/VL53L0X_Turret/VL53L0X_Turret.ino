@@ -24,7 +24,7 @@ VL53L0X:
 #define ENC_PIN 2
 
 double Setpoint, Input, Output;
-PID drivePID(&Input, &Output, &Setpoint, 20, 8, 3, DIRECT);
+PID drivePID(&Input, &Output, &Setpoint, 100, 120, 10, DIRECT);
 
 
 VL53L0X laser;
@@ -128,7 +128,7 @@ void initComms() {
   //  }
   //
   if (! n.getParam("~num_pts", &N)) {
-    N = 32;
+    N = 64;
   }
 }
 #endif
