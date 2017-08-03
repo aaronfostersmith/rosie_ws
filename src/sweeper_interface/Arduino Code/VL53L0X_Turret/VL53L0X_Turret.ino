@@ -127,9 +127,9 @@ void initComms() {
   ANGLE_MAX = PI;
   //  }
   //
-  if (! n.getParam("~num_pts", &N)) {
+  //if (! n.getParam("~num_pts", &N)) {
     N = 64;
-  }
+  //}
 }
 #endif
 
