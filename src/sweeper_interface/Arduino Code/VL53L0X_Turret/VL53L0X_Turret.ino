@@ -28,7 +28,7 @@ PID drivePID(&Input, &Output, &Setpoint, 100, 120, 10, DIRECT);
 
 
 VL53L0X laser;
-#define LONG_RANGE
+//#define LONG_RANGE
 
 
 #define PI 3.14159265359
