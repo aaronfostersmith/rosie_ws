@@ -42,8 +42,15 @@
 
 	  
   </node>
+    
+ <!-- convert joint states to TF transforms for rviz, etc -->
+        <param name="robot_description" command="$(find xacro)/xacro.py '$(find rosie_description)/urdf/rosie.xacro'" />
 
-
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+    <remap from="/joint_states" to="/rosie/joint_states" />
+  </node>
+    
 </launch>
 
 

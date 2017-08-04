@@ -15,6 +15,53 @@
   <node pkg="sweeper_interface" type = "rosie_interpreter" name="rosie_interpreter">
   </node>
 
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
+    
+      <param name="frequency" value="10"/>
+      <param name="sensor_timeout" value="0.5"/>
+      <param name="two_d_mode" value="true"/>
+<!--
+      <param name="imu0" value="/imu/data_raw"/>  
+      <param name="imu0_relative" value="true"/>
+
+
+      <param name="odom0" value="/odom/mouse"/> 
+      <param name="odom0_differential" value ="true"/>
+-->
+      <param name="odom1" value="/odom/enc"/>
+	  
+      <param name="map_frame" value="map"/>
+      <param name="odom_frame" value="odom"/>
+      <param name="base_link_frame" value="base_link"/>
+      <param name="world_frame" value="odom"/>
+
+
+<!--
+	<rosparam param="odom0_config">[true, true, false, 
+                                        false, false, true, 
+                                        false, false, false, 
+                                        false, false, false,
+                                        false, false, false]</rosparam>
+
+-->
+	<rosparam param="odom1_config">[true, true, false, 
+                                    false, false, true, 
+                                    false, false, false, 
+                                    false, false, false,
+                                    false, false, false]</rosparam>
+
+<!--
+	<rosparam param="imu0_config">[false, false, false, 
+                                   false, false, false, 
+                                   false, false, false, 
+                                   false, false, true,
+                                   false, false, false]</rosparam>
+-->
+      <param name="print_diagnostics" value="true"/>
+
+
+  </node>
+
 <!--
   <node pkg="imu_filter_madgwick" type = "imu_filter_node" name="IMU_Madgwick">
 	<param name="gain" value="0.1" />
