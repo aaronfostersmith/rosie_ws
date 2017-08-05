@@ -5,12 +5,12 @@
 <param name="/use_sim_time" value="false"/>
   <!--- Run gmapping -->
   <node pkg="gmapping" name="slam_gmapping" type="slam_gmapping" output="screen">
-    <param name="delta" value="0.025"/>
+    <param name="delta" value="0.05"/>
     <param name="xmin" value="-20"/>
     <param name="xmax" value="20"/>
     <param name="ymin" value="-20"/>
     <param name="ymax" value="20"/>
-    <param name="minimumScore" value="5" />
+    <param name="minimumScore" value="25" />
     <remap from="scan" to="/sweeper/scan"/>
     <param name="maxRange" value="2.0" />
     <param name="maxUrange" value="1.0" />
