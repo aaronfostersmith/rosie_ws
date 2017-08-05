@@ -11,7 +11,7 @@
     <param name="ymin" value="-20"/>
     <param name="ymax" value="20"/>
     <param name="minimumScore" value="5" />
-    <remap from="scan" to="/sweeper/scann"/>
+    <remap from="scan" to="/sweeper/scan"/>
     <param name="maxRange" value="2.0" />
     <param name="maxUrange" value="1.0" />
     <param name="base_frame" value="base_link" />
