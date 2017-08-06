@@ -24,6 +24,26 @@
 
   </node>
   
+    
+  <!-- Move base -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find rosie_navigation)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find rosie_navigation)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find rosie_navigation)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find rosie_navigation)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find rosie_navigation)/config/base_local_planner_params.yaml" command="load" />
+  
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+    <param name="controller_frequency" value="5" />
+    <param name="planner_frequency" value="0.25" />
+  
+    <remap from="cmd_vel" to="cmd_vel"/>
+    <remap from="odom" to="odom"/>
+    <remap from="scan" to="/sweeper/scan"/>
+
+	  
+  </node>
+    
 </launch>
 
 
