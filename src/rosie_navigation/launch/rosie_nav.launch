@@ -10,10 +10,10 @@
     <param name="xmax" value="20"/>
     <param name="ymin" value="-20"/>
     <param name="ymax" value="20"/>
-    <param name="minimumScore" value="25" />
+    <param name="minimumScore" value="20" />
     <remap from="scan" to="/sweeper/scan"/>
     <param name="maxRange" value="2.0" />
-    <param name="maxUrange" value="1.0" />
+    <param name="maxUrange" value="1.5" />
     <param name="base_frame" value="base_link" />
 
     <param name="linearUpdate" value="0.2"/>
