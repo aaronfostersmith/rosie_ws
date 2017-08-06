@@ -6,8 +6,8 @@
     <param name="baud" value="57600"/>
     <param name="angle_min" value="-3.14159265359"/>
     <param name="angle_max" value="3.14159265359"/>
-    <param name="num_pts" value="32"/>
-    <param name="time_increment" value="20000"/>
+    <param name="num_pts" value="64"/>
+    <param name="time_increment" value="30000"/>
   </node>
 
 <!--
@@ -22,8 +22,8 @@
   <node pkg="sweeper_interface" type = "rosie_interpreter" name="rosie_interpreter" output="screen">
     <param name="angle_min" value="-3.14159265359"/>
     <param name="angle_max" value="3.14159265359"/>
-    <param name="num_pts" value="32"/>
-    <param name="time_increment" value="0.02"/>
+    <param name="num_pts" value="64"/>
+    <param name="time_increment" value="0.03"/>
   </node>
 
 

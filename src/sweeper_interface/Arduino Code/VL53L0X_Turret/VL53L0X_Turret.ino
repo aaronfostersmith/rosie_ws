@@ -1,10 +1,10 @@
 /*WIRING:
-TCRT5000:
+  TCRT5000:
   - Black - Gnd
   - Green - Detector
   - Yellow - Emitter
 
-VL53L0X:
+  VL53L0X:
   - Red - Vin
   - Black - Gnd
   - Yellow - SCL - A5
@@ -24,7 +24,7 @@ VL53L0X:
 #define ENC_PIN 2
 
 double Setpoint, Input, Output;
-PID drivePID(&Input, &Output, &Setpoint, 100, 120, 10, DIRECT);
+PID drivePID(&Input, &Output, &Setpoint, 10, 160, 2, DIRECT);
 
 
 VL53L0X laser;
@@ -35,11 +35,11 @@ VL53L0X laser;
 
 float ANGLE_MIN = -PI; //PI/2 is straight forward
 float ANGLE_MAX = PI;
-int TIME_INCREMENT = 25000; // us WHY CAN"T GO OVER 30000? OVERFLOW?
+int TIME_INCREMENT = 30000; // us WHY CAN"T GO OVER 30000? OVERFLOW?
 int N;
 
-#define RANGE_MIN 0.03 //meters
-#define RANGE_MAX 1.00 //meters
+#define RANGE_MIN 0.02 //meters
+#define RANGE_MAX 2.00 //meters
 
 
 //instantiate a handle for the node
@@ -64,18 +64,11 @@ void setup() {
   initComms();
 #endif
 
-  //calculate some paramters
-  Setpoint = 1.0 / ((float)TIME_INCREMENT * N / 1000000); //Hz
-  Input = 0;
-
-  drivePID.SetOutputLimits(84, 255);
-  drivePID.SetSampleTime(1000 / (Setpoint * 8));
-  drivePID.SetMode(AUTOMATIC);
-
   //init laser and I2C
   Wire.begin();
   laser.init();
-  laser.setTimeout(500);
+  laser.setTimeout(25);
+ 
 
 #if defined LONG_RANGE
   // lower the return signal rate limit (default is 0.25 MCPS)
@@ -86,7 +79,17 @@ void setup() {
 #endif
 
   // set timing budget to
-  laser.setMeasurementTimingBudget(20000);
+  laser.setMeasurementTimingBudget(25000);
+
+
+  //calculate some paramters
+  Setpoint = 1.0 / ((float)TIME_INCREMENT * N / 1000000); //Hz
+  Input = 0;
+
+  drivePID.SetOutputLimits(16, 255);
+  drivePID.SetSampleTime(1000 / (Setpoint * 8));
+  drivePID.SetMode(AUTOMATIC);
+
 
 }
 
@@ -127,9 +130,10 @@ void initComms() {
   ANGLE_MAX = PI;
   //  }
   //
-  //if (! n.getParam("~num_pts", &N)) {
-    N = 64;
-  //}
+ 
+  if (! n.getParam("~num_pts", &N)) {
+    N = 48;
+  } 
 }
 #endif
 
@@ -140,8 +144,8 @@ void pub_ping() {
 
   //get a reading
   int range = laser.readRangeSingleMillimeters();
-  if (laser.timeoutOccurred() || range > RANGE_MAX * 1000) {
-    range = RANGE_MAX + 1;
+  if (laser.timeoutOccurred() || range > RANGE_MAX * 1000 || range < RANGE_MIN *1000) {
+    range = RANGE_MAX*1000 + 1;
   }
 
 #ifdef ROSSERIAL

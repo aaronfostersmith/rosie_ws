@@ -6,7 +6,7 @@
 
 double Setpoint, Input, Output;
 double Kp, Ki, Kd;
-PID drivePID(&Input, &Output, &Setpoint, 100, 120, 10, DIRECT);
+PID drivePID(&Input, &Output, &Setpoint,10,160, 2, DIRECT);
 PID_ATune driveATune(&Input, &Output);
 
 void setup() {
@@ -15,10 +15,10 @@ void setup() {
   pinMode(MOTOR_PIN, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(ENC_PIN), ENC_ISR, CHANGE);
 
-  Setpoint = 0.75; //Hz
+  Setpoint = 0.25; //Hz
   Input = 0;
 
-  drivePID.SetOutputLimits(84, 254);
+  drivePID.SetOutputLimits(16, 255);
   drivePID.SetSampleTime(1000 / (Setpoint * 8));
   drivePID.SetMode(AUTOMATIC);
   //tune();
