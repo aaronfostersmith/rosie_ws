@@ -2,24 +2,24 @@
 #include <PID_AutoTune_v0.h>
 
 #define MOTOR_PIN 5
-#define ENC_PIN 2
+#define ENC_PIN 3
 
 double Setpoint, Input, Output;
 double Kp, Ki, Kd;
-PID drivePID(&Input, &Output, &Setpoint,10,160, 2, DIRECT);
+PID drivePID(&Input, &Output, &Setpoint,15,130, 5, DIRECT);
 PID_ATune driveATune(&Input, &Output);
 
 void setup() {
   Serial.begin(9600);
   pinMode(ENC_PIN, INPUT_PULLUP);
   pinMode(MOTOR_PIN, OUTPUT);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN), ENC_ISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENC_PIN), ENC_ISR, RISING);
 
-  Setpoint = 0.25; //Hz
+  Setpoint = 1; //Hz
   Input = 0;
 
   drivePID.SetOutputLimits(16, 255);
-  drivePID.SetSampleTime(1000 / (Setpoint * 8));
+  drivePID.SetSampleTime(1000 / (Setpoint * 12));
   drivePID.SetMode(AUTOMATIC);
   //tune();
 
@@ -56,7 +56,7 @@ void ENC_ISR() {
   long thistime = micros();
   long dt = thistime - lastime;
   if (dt > 31250) {
-    Input = 1000000.0 / (8 * dt);
+    Input = 1000000.0 / (12 * dt);
     lastime = thistime;
   }
 }

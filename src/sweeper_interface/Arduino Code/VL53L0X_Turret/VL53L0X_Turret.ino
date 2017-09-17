@@ -21,10 +21,12 @@
 #include <VL53L0X.h>
 
 #define MOTOR_PIN 5
-#define ENC_PIN 2
+#define ENC_PIN 3
+#define INDEX_PIN 2
+#define ENCODER_TICKS 12
 
 double Setpoint, Input, Output;
-PID drivePID(&Input, &Output, &Setpoint, 10, 160, 2, DIRECT);
+PID drivePID(&Input, &Output, &Setpoint, 15, 130, 5, DIRECT);
 
 
 VL53L0X laser;
@@ -54,8 +56,11 @@ ros::Publisher scan_pub("/sweeper/rawLaser", &scan_msg);
 void setup() {
 
   pinMode(ENC_PIN, INPUT_PULLUP);
+  pinMode(INDEX_PIN, INPUT_PULLUP);
+
   pinMode(MOTOR_PIN, OUTPUT);
-  attachInterrupt(digitalPinToInterrupt(ENC_PIN), ENC_ISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ENC_PIN), ENC_ISR, FALLING);
+  attachInterrupt(digitalPinToInterrupt(INDEX_PIN), IND_ISR, RISING);
 
 
 
@@ -68,7 +73,7 @@ void setup() {
   Wire.begin();
   laser.init();
   laser.setTimeout(25);
- 
+
 
 #if defined LONG_RANGE
   // lower the return signal rate limit (default is 0.25 MCPS)
@@ -87,23 +92,29 @@ void setup() {
   Input = 0;
 
   drivePID.SetOutputLimits(16, 255);
-  drivePID.SetSampleTime(1000 / (Setpoint * 8));
+  drivePID.SetSampleTime(1000 / (Setpoint * ENCODER_TICKS));
   drivePID.SetMode(AUTOMATIC);
 
 
 }
 
 long lastenc = 0;
-byte count = 0;
 void ENC_ISR() {
   long thistime = micros();
-  Input = 1000000.0 / (8.0 * (thistime - lastenc));
+  if(thistime - lastenc >50){
+  Input = 1000000.0 / (ENCODER_TICKS * (thistime - lastenc));
   lastenc = thistime;
-  if (count >= 7) {
-    count = 0;
-    scan_msg.seq = 0;
   }
-  else count++;
+}
+
+long lastind = 0;
+void IND_ISR() {
+  long thistime = millis();
+  
+  if (thistime - lastind >100) {
+    scan_msg.seq = 0;
+    lastind = thistime;
+  }
 }
 
 //initialize ros nodes and advertise Publishers, subcribe to topics
@@ -130,10 +141,10 @@ void initComms() {
   ANGLE_MAX = PI;
   //  }
   //
- 
+
   if (! n.getParam("~num_pts", &N)) {
     N = 48;
-  } 
+  }
 }
 #endif
 
@@ -144,8 +155,8 @@ void pub_ping() {
 
   //get a reading
   int range = laser.readRangeSingleMillimeters();
-  if (laser.timeoutOccurred() || range > RANGE_MAX * 1000 || range < RANGE_MIN *1000) {
-    range = RANGE_MAX*1000 + 1;
+  if (laser.timeoutOccurred() || range > RANGE_MAX * 1000 || range < RANGE_MIN * 1000) {
+    range = RANGE_MAX * 1000 + 1;
   }
 
 #ifdef ROSSERIAL
