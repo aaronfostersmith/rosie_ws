@@ -73,7 +73,7 @@ public:
         }
 
         //populate header
-        ls_temp.header.frame_id = "base_link";
+        ls_temp.header.frame_id = "hokuyo";
 	
 		//set laserscan parameters
 		ls_temp.angle_min = _ls_angle_min;
