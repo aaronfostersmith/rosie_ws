@@ -48,7 +48,7 @@ public:
         }
          if (!ros::param::get("~num_pts", _ls_num_pts))
         {
-        _ls_num_pts= 64;
+        _ls_num_pts= 32;
         ROS_WARN("Failed to get num_pts param. Using 64 pts as default");
         }
          if (!ros::param::get("~time_increment", _ls_time_increment))
@@ -81,7 +81,7 @@ public:
 		ls_temp.angle_increment = (ls_temp.angle_max-ls_temp.angle_min)/_ls_num_pts; //pi/2
 		ls_temp.time_increment = _ls_time_increment;
 		ls_temp.scan_time = ls_temp.time_increment*(float)_ls_num_pts;
-		ls_temp.range_min = 0.03;
+		ls_temp.range_min = 0.02;
 		ls_temp.range_max = 2.0;
 		ls_temp.ranges.resize(_ls_num_pts); //4
 		

@@ -5,20 +5,20 @@
 <param name="/use_sim_time" value="false"/>
   <!--- Run gmapping -->
   <node pkg="gmapping" name="slam_gmapping" type="slam_gmapping" output="screen">
-    <param name="delta" value="0.03"/>
+    <param name="delta" value="0.04"/>
     <param name="xmin" value="-20"/>
     <param name="xmax" value="20"/>
     <param name="ymin" value="-20"/>
     <param name="ymax" value="20"/>
-    <param name="minimumScore" value="20" />
+    <param name="minimumScore" value="15" />
     <remap from="scan" to="/sweeper/scan"/>
     <param name="maxRange" value="2.0" />
     <param name="maxUrange" value="2.0" />
     <param name="base_frame" value="base_link" />
 
-    <param name="linearUpdate" value="0.2"/>
-    <param name="angularUpdate" value="0.3"/>
-    <param name="temporalUpdate" value="2"/>
+    <param name="linearUpdate" value="0.1"/>
+    <param name="angularUpdate" value="0.5"/>
+    <param name="temporalUpdate" value="1"/>
     <param name="resampleThreshold" value="0.5"/>
     <param name="particles" value="60"/>
 
@@ -34,8 +34,8 @@
     <rosparam file="$(find rosie_navigation)/config/base_local_planner_params.yaml" command="load" />
   
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-    <param name="controller_frequency" value="5" />
-    <param name="planner_frequency" value="0.25" />
+    <param name="controller_frequency" value="2" />
+    <param name="planner_frequency" value="0.125" />
   
     <remap from="cmd_vel" to="cmd_vel"/>
     <remap from="odom" to="odom"/>

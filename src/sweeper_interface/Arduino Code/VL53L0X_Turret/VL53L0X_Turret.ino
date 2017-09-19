@@ -143,7 +143,7 @@ void initComms() {
   //
 
   if (! n.getParam("~num_pts", &N)) {
-    N = 48;
+    N = 32;
   }
 }
 #endif
