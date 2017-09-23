@@ -30,18 +30,16 @@ PID drivePID(&Input, &Output, &Setpoint, 15, 130, 5, DIRECT);
 
 
 VL53L0X laser;
-//#define LONG_RANGE
-
 
 #define PI 3.14159265359
 
 float ANGLE_MIN = -PI; //PI/2 is straight forward
 float ANGLE_MAX = PI;
-int TIME_INCREMENT = 30000; // us WHY CAN"T GO OVER 30000? OVERFLOW?
+int TIME_INCREMENT = 25000; // us WHY CAN"T GO OVER 30000? OVERFLOW?
 int N;
 
 #define RANGE_MIN 0.02 //meters
-#define RANGE_MAX 2.00 //meters
+#define RANGE_MAX 1.00 //meters
 
 
 //instantiate a handle for the node
@@ -75,16 +73,9 @@ void setup() {
   laser.setTimeout(25);
 
 
-#if defined LONG_RANGE
-  // lower the return signal rate limit (default is 0.25 MCPS)
-  laser.setSignalRateLimit(0.1);
-  // increase laser pulse periods (defaults are 14 and 10 PCLKs)
-  laser.setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 18);
-  laser.setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
-#endif
 
   // set timing budget to
-  laser.setMeasurementTimingBudget(25000);
+  laser.setMeasurementTimingBudget(20000);
 
 
   //calculate some paramters
@@ -95,13 +86,12 @@ void setup() {
   drivePID.SetSampleTime(1000 / (Setpoint * ENCODER_TICKS));
   drivePID.SetMode(AUTOMATIC);
 
-
 }
 
 long lastenc = 0;
 void ENC_ISR() {
   long thistime = micros();
-  if(thistime - lastenc >50){
+  if(thistime - lastenc >25){
   Input = 1000000.0 / (ENCODER_TICKS * (thistime - lastenc));
   lastenc = thistime;
   }
@@ -162,7 +152,7 @@ void pub_ping() {
 #ifdef ROSSERIAL
   scan_msg.range = range;
   scan_msg.seq ++;
-  if (scan_msg.seq >= N) scan_msg.seq = 0;
+  //if (scan_msg.seq >= N) scan_msg.seq = 0;
   //publish the scan data
   scan_pub.publish(&scan_msg); //mousePose_msg is published to topic mouse_odo
   n.spinOnce();
