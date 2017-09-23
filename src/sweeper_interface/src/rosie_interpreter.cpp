@@ -65,32 +65,34 @@ public:
         //containers for PCL and ROS data types
 
 		static sensor_msgs::LaserScan ls_temp;
-        
-          if (raw.seq == 0)
+        if(raw.seq <= _ls_num_pts)
         {
+            if (raw.seq == 0)
+            {
             //set laserscan parameters
-		    ls_temp.angle_min = _ls_angle_min;
-		    ls_temp.angle_max = _ls_angle_max; //2*pi
-		    ls_temp.angle_increment = (ls_temp.angle_max-ls_temp.angle_min)/_ls_num_pts; //pi/2
-		    ls_temp.time_increment = _ls_time_increment;
-		    ls_temp.scan_time = ls_temp.time_increment*(float)_ls_num_pts;
-		    ls_temp.range_min = 0.02;
-		    ls_temp.range_max = 2.0;
-		    ls_temp.ranges.resize(_ls_num_pts); //4
-            ls_temp.header.stamp = ros::Time::now();		    
-        }
+		        ls_temp.angle_min = _ls_angle_min;
+		        ls_temp.angle_max = _ls_angle_max; //2*pi
+		        ls_temp.angle_increment = (ls_temp.angle_max-ls_temp.angle_min)/_ls_num_pts; //pi/2
+		        ls_temp.time_increment = _ls_time_increment;
+		        ls_temp.scan_time = ls_temp.time_increment*(float)_ls_num_pts;
+		        ls_temp.range_min = 0.02;
+		        ls_temp.range_max = 2.0;
+		        ls_temp.ranges.resize(_ls_num_pts); //4
+                ls_temp.header.stamp = ros::Time::now();		    
+            }
 
-        //populate header
-        ls_temp.header.frame_id = "hokuyo";
+            //populate header
+            ls_temp.header.frame_id = "hokuyo";
 
-        //fill with laserScan with num_pts data points
+            //fill with laserScan with num_pts data points
 
-	    //laserscan
-		ls_temp.ranges[raw.seq]= raw.range/1000.0;
+	        //laserscan
+		    ls_temp.ranges[raw.seq]= raw.range/1000.0;
         
-        if (raw.seq >= _ls_num_pts)
-        {
-            ls_pub_.publish(ls_temp);
+            if (raw.seq == _ls_num_pts)
+            {
+                ls_pub_.publish(ls_temp);
+            }
         }
     }
 
