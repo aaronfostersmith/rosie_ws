@@ -53,7 +53,7 @@ public:
         }
          if (!ros::param::get("~time_increment", _ls_time_increment))
         {
-        _ls_time_increment = 0.03;
+        _ls_time_increment = 0.025;
         ROS_WARN("Failed to get time_increment param. Using 0.03 seconds as default");
         }
         
@@ -67,7 +67,7 @@ public:
 		static sensor_msgs::LaserScan ls_temp;
         if(raw.seq <= _ls_num_pts)
         {
-            if (raw.seq == 0)
+            if (raw.seq == 1)
             {
             //set laserscan parameters
 		        ls_temp.angle_min = _ls_angle_min;
@@ -76,7 +76,7 @@ public:
 		        ls_temp.time_increment = _ls_time_increment;
 		        ls_temp.scan_time = ls_temp.time_increment*(float)_ls_num_pts;
 		        ls_temp.range_min = 0.02;
-		        ls_temp.range_max = 2.0;
+		        ls_temp.range_max = 1.0;
 		        ls_temp.ranges.resize(_ls_num_pts); //4
                 ls_temp.header.stamp = ros::Time::now();		    
             }
