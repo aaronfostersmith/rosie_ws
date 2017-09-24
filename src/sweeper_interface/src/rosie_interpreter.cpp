@@ -64,10 +64,12 @@ public:
        
         //containers for PCL and ROS data types
 
-		static sensor_msgs::LaserScan ls_temp;
+	static sensor_msgs::LaserScan ls_temp;
+        static bool init = false;
+
         if(raw.seq <= _ls_num_pts)
         {
-            if (raw.seq == 1)
+            if (raw.seq == 1 || !init)
             {
             //set laserscan parameters
 		        ls_temp.angle_min = _ls_angle_min;
@@ -76,9 +78,10 @@ public:
 		        ls_temp.time_increment = _ls_time_increment;
 		        ls_temp.scan_time = ls_temp.time_increment*(float)_ls_num_pts;
 		        ls_temp.range_min = 0.02;
-		        ls_temp.range_max = 1.0;
+		        ls_temp.range_max = 1.001;
 		        ls_temp.ranges.resize(_ls_num_pts); //4
-                ls_temp.header.stamp = ros::Time::now();		    
+                        ls_temp.header.stamp = ros::Time::now();
+			init = true;		    
             }
 
             //populate header
