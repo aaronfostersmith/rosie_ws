@@ -3,7 +3,7 @@ raytrace_range: 1.0
 #footprint: [[x0, y0], [x1, y1], ... [xn, yn]]
 #robot_radius: ir_of_robot
 footprint: [[0.10, -0.125], [-0.2,-0.125], [-0.2, 0.125], [0.10, 0.125]]
-inflation_radius: 0.3
+inflation_radius: 0.025
 
 observation_sources: laser_scan_sensor #point_cloud_sensor
 
