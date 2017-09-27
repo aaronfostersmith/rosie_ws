@@ -2,7 +2,7 @@
 #include "Motor_Control.h"
 float encPose[3] = {0, 0, 0};
 //gains for encoder tuning
-const int TMR1preload = 53036; //preload value for PID timer interrupt
+const int TMR1preload = 53036; //65536-16MHz/64/24Hz
 const int encPeriod = 50; //ms
 long lastEncUpdate = 0;
 Motor_Control motorControl; //motor control object
@@ -160,11 +160,9 @@ void initComms() {
 
 //callback function for velocity subscription
 void velocityCb(const geometry_msgs::Twist& msg) {
-  //map linear and rotational vectors to wheel velocities [mm/s]--> 75mm/s max
-  noInterrupts();
+  //map linear and rotational vectors to wheel velocities [mm/s]
   motorControl.set_motor_spd(LEFTMTR, (msg.linear.x * 1000 - msg.angular.z * 95)); //left_speed_out = cmd_vel.linear.x - cmd_vel.angular.z*ROBOT_WIDTH/2
   motorControl.set_motor_spd(RIGHTMTR, (msg.linear.x * 1000 + msg.angular.z * 95)); //right_speed_out = cmd_vel.linear.x + cmd_vel.angular.z*ROBOT_WIDTH/2
-  interrupts();
 }
 //timer interrupt for motor PID update
 ISR(TIMER1_OVF_vect)

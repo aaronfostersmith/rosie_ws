@@ -5,17 +5,9 @@
 
 //constructor: initializes all pins and parameters
 Motor_Control::Motor_Control(void)
+  : mPID_L(&mCurSPD_R, &mCurPWR_R, &mSetSPD_R, KP_L, KI_L, KD_L, DIRECT)
+  , mPID_R(&mCurSPD_L, &mCurPWR_L, &mSetSPD_L, KP_L, KI_L, KD_L, DIRECT)
 {
-  //default values for gains and PID constants
-  mKp_L = 0.4;
-  mKi_L = 0.0003;
-  mKd_L = 1.25;
-  mKp_R = 0.4;
-  mKi_R = 0.0003;
-  mKd_R = 1.25;
-
-  mGainTheta = 1;
-  mGainXY = 1;
 
   pinMode(ENA, OUTPUT);
   pinMode(ENB, OUTPUT);
@@ -26,41 +18,44 @@ Motor_Control::Motor_Control(void)
 
   pinMode(LEFTENC, INPUT);
   pinMode(RIGHTENC, INPUT);
+
+  //initialize PID variables
+  mSetSPD_R = 0;
+  mSetSPD_L = 0;
+  mCurPWR_R = 0;
+  mCurPWR_L = 0;
+
+  //set power output limits
+  mPID_L.SetOutputLimits(0, 255);
+  mPID_R.SetOutputLimits(0, 255);
+
+  //set sample time
+  mPID_L.SetSampleTime(41.66);
+  mPID_R.SetSampleTime(41.66);
+
+  //enable PID
+  mPID_L.SetMode(AUTOMATIC);
+  mPID_R.SetMode(AUTOMATIC);
+
 }
 
-void Motor_Control::set_PID_gains(float pP_L, float pI_L, float pD_L, float pP_R, float pI_R, float pD_R)
-{
-  mKp_R = pP_R;
-  mKi_R = pI_R;
-  mKd_R = pD_R;
-  mKp_L = pP_L;
-  mKi_L = pI_L;
-  mKd_L = pD_L;
-}
-
-void Motor_Control::set_enc_gains(float pGainTheta, float pGainXY)
-{
-  mGainTheta = pGainTheta;
-  mGainXY = pGainXY;
-}
 
 
 void Motor_Control::set_motor_spd(bool mtr, double spd)
 {
-  int dir1, dir2, en;
+  byte dir1, dir2, en;
 
   if (abs(spd) < 10.0) spd = 0; //10mm/s min
 
 
   //Select left or right side pins
-  noInterrupts();
+
   switch (mtr) {
     case RIGHTMTR:
       dir1 = IN1;
       dir2 = IN2;
       en = ENB;
       mSetSPD_R = abs(spd);
-      mI_R = 0;
       mSign_R = spd / mSetSPD_R;
       break;
     case LEFTMTR:
@@ -68,7 +63,6 @@ void Motor_Control::set_motor_spd(bool mtr, double spd)
       dir2 = IN3;
       en = ENA;
       mSetSPD_L = abs(spd);
-      mI_L = 0;
       mSign_L = spd / mSetSPD_L;
       break;
     default:
@@ -85,16 +79,15 @@ void Motor_Control::set_motor_spd(bool mtr, double spd)
     digitalWrite(dir2, HIGH);
   }
 
-  interrupts();
 }
 
 void Motor_Control::update_pose(float pose[3])
 {
   //D*pi*224
 
-  float d_right = (float)mCount_R * 0.8415 * mSign_R; //pi*60mm/224
-  float d_left = (float)mCount_L * 0.8415 * mSign_L;
-  float d_center = ((d_right + d_left) / 2) * mGainXY;
+  float d_right = (float)mCount_R * MM_PER_TICK; //pi*60mm/224
+  float d_left = (float)mCount_L * MM_PER_TICK;
+  float d_center = ((d_right + d_left) / 2);
 
   //right hand rule; ccw is +, cw is -
   //x'= x + d_ctr*cos(theta)
@@ -103,8 +96,8 @@ void Motor_Control::update_pose(float pose[3])
   //y'
   pose[1] += d_center * sin(pose[2]);
 
-  //theta'd_baseline = 190 mm
-  pose[2] += ((d_right - d_left) / 190) * mGainTheta;
+  //theta'd_baseline
+  pose[2] += ((d_right - d_left) / D_WHEELBASE);
   //zero counts until next update
 
   mCount_L = 0;
@@ -113,7 +106,22 @@ void Motor_Control::update_pose(float pose[3])
 
 void Motor_Control::update_PID()
 {
-  noInterrupts();
+  //adaptive PID values; aggressive constants used above 30 mm/s
+  if (mSetSPD_R < 30)
+  {
+    mPID_R.SetTunings(KP_L, KI_L, KD_L);
+  } else
+  {
+    mPID_R.SetTunings(KP_H, KI_H, KD_H);
+  }
+  if (mSetSPD_L < 30)
+  {
+    mPID_L.SetTunings(KP_L, KI_L, KD_L);
+  } else
+  {
+    mPID_L.SetTunings(KP_H, KI_H, KD_H);
+  }
+
   double e;
   //RIGHT PID
   if (mSetSPD_R == 0) {
@@ -121,11 +129,7 @@ void Motor_Control::update_PID()
   }
   else {
     if (( micros() - mLastime_R) > 2244000 / mSetSPD_R) mCurSPD_R = 0.0; // stop motors from stalling at slow speeds; if this period > 3*expected period
-    e = mSetSPD_R - mCurSPD_R; //calculate error
-    mI_R += e; //calculate integral
-    mCurPWR_R += mKp_R * e + mKi_R * mI_R + mKd_R * (e - mPre_e_R); //PID calculation
-    mCurPWR_R = constrain(mCurPWR_R, 0, 255); //stop the power from going out of range
-    mPre_e_R = e; //save error for derivative calculation next time
+    mPID_R.Compute();
   }
 
 
@@ -135,61 +139,56 @@ void Motor_Control::update_PID()
   }
   else {
     if (micros() - mLastime_L > 2244000 / mSetSPD_L) mCurSPD_L = 0.0;
-    e = mSetSPD_L - mCurSPD_L;
-    mI_L += e;
-    mCurPWR_L += mKp_L * e + mKi_L * mI_L + mKd_L * (e - mPre_e_L ) ;
-    mCurPWR_L = constrain(mCurPWR_L, 0, 255);
-    mPre_e_L = e;
-     }
-
-    analogWrite(ENA, mCurPWR_R);
-    analogWrite(ENB, mCurPWR_L);
-
-    interrupts();
+    mPID_L.Compute();
   }
 
-  void Motor_Control::service_left_enc()
-  {
-    //estimate current ticks per second
-    noInterrupts();
-    long temp;
-    long mCurtime_L = micros();
+  analogWrite(ENA, mCurPWR_R);
+  analogWrite(ENB, mCurPWR_L);
 
-    temp = mCurtime_L - mLastime_L;
-    if (temp > 1000) {
-      mCurSPD_L = 772522.78 / (double) temp; // 0.77252278367 [mm/tick]/ temp [s/tick] = speed in mm/s
-      mLastime_L = mCurtime_L;
-      mCount_L++;
+}
 
-    }
-    interrupts();
+void Motor_Control::service_left_enc()
+{
+  //estimate current ground speed in mm/s
+  noInterrupts();
+  long temp;
+  long mCurtime_L = micros();
+
+  temp = mCurtime_L - mLastime_L;
+  if (temp > 1000) {
+    mCurSPD_L = MM_PER_TICK * 1000000 / (double) temp; //speed in mm/s
+    mLastime_L = mCurtime_L;
+    mCount_L += mSign_L;
+
   }
+  interrupts();
+}
 
-  void Motor_Control::service_right_enc()
-  {
-    //estimate current ticks per second
-    noInterrupts();
-    long temp;
-    long mCurtime_R = micros();
+void Motor_Control::service_right_enc()
+{
+  //estimate current ground speed in mm/s
+  noInterrupts();
+  long temp;
+  long mCurtime_R = micros();
 
-    temp = mCurtime_R - mLastime_R;
-    if (temp > 1000) {
-      mCurSPD_R = 772522.78 / (double)temp;
-      mLastime_R = mCurtime_R;
-      mCount_R ++;
+  temp = mCurtime_R - mLastime_R;
+  if (temp > 1000) {
+    mCurSPD_R = MM_PER_TICK * 1000000 / (double) temp;
+    mLastime_R = mCurtime_R;
+    mCount_R += mSign_R;
 
-    }
-    interrupts();
   }
+  interrupts();
+}
 
-  int Motor_Control::get_left_enc()
-  {
-    return LEFTENC;
-  }
 
-    int Motor_Control::get_right_enc()
-  {
-    return RIGHTENC;
-  }
+int Motor_Control::get_left_enc()
+{
+  return LEFTENC;
+}
 
+int Motor_Control::get_right_enc()
+{
+  return RIGHTENC;
+}
 
