@@ -16,14 +16,13 @@
 
 //PID values
 //high
-#define KP_H 10
-#define KI_H 5
-#define KD_H 1
-
+#define KP_H 4
+#define KI_H 10
+#define KD_H 0
 //low
-#define KP_L 5
-#define KI_L 1
-#define KD_L 1
+#define KP_L 1.5
+#define KI_L 5
+#define KD_L 0.01
 
 class Motor_Control
 {

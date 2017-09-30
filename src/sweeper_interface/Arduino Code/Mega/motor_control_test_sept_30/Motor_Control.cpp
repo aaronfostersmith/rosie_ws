@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "Motor_Control.h"
 
-//#define debug
+#define debug
 
 //constructor: initializes all pins and parameters
 Motor_Control::Motor_Control(void)
