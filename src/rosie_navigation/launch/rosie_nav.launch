@@ -12,9 +12,10 @@
     <param name="ymax" value="20"/>
     <param name="minimumScore" value="15" />
     <remap from="scan" to="/sweeper/scan"/>
-    <param name="maxRange" value="1.001" />
-    <param name="maxUrange" value="0.875" />
+    <param name="maxRange" value="1.002" />
+    <param name="maxUrange" value="1.00" />
     <param name="base_frame" value="base_link" />
+    <param name="odom_frame" value="odom" />
 
     <param name="linearUpdate" value="0.1"/>
     <param name="angularUpdate" value="0.5"/>
@@ -34,7 +35,7 @@
     <rosparam file="$(find rosie_navigation)/config/base_local_planner_params.yaml" command="load" />
   
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-    <param name="controller_frequency" value="8" />
+    <param name="controller_frequency" value="10" />
     <param name="planner_frequency" value="0.5" />
   
     <remap from="cmd_vel" to="cmd_vel"/>

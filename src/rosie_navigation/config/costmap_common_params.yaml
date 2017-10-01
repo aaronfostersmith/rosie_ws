@@ -1,9 +1,12 @@
-obstacle_range: 1.0
-raytrace_range: 1.0
-#footprint: [[x0, y0], [x1, y1], ... [xn, yn]]
-#robot_radius: ir_of_robot
+obstacle_range: 1.000
+raytrace_range: 1.001
+
 footprint: [[0.10, -0.125], [-0.2,-0.125], [-0.2, 0.125], [0.10, 0.125]]
-inflation_radius: 0.025
+footprint_padding: 0.010
+
+inflation_radius: 0.1
+cost_scaling_factor: 2
+lethal_cost_threshold: 100
 
 observation_sources: laser_scan_sensor #point_cloud_sensor
 
