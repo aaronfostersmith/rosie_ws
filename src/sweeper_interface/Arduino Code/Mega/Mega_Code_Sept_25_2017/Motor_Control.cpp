@@ -86,7 +86,7 @@ void Motor_Control::update_pose(float pose[3])
 
   float d_right = (float)mCount_R * MM_PER_TICK; //pi*60mm/224
   float d_left = (float)mCount_L * MM_PER_TICK;
-  float d_center = ((d_right + d_left) / 2);
+  float d_center = ((d_right + d_left) / 2)*ENC_GAIN_X;
 
   //right hand rule; ccw is +, cw is -
   //x'= x + d_ctr*cos(theta)
@@ -96,9 +96,18 @@ void Motor_Control::update_pose(float pose[3])
   pose[1] += d_center * sin(pose[2]);
 
   //theta'd_baseline
-  pose[2] += ((d_right - d_left) / D_WHEELBASE);
+  pose[2] += ((d_right - d_left) / D_WHEELBASE)*ENC_GAIN_THETA;
+  
+  //make sure theta is within 0-> 2PI rad
+  if(pose[2] >= 6.283185307)
+  {
+    pose[2] -= 6.283185307;
+  }else if (pose[2] <= -6.283185307)
+  {
+    pose[2] += 6.283185307;
+  }
+  
   //zero counts until next update
-
   mCount_L = 0;
   mCount_R = 0;
 }

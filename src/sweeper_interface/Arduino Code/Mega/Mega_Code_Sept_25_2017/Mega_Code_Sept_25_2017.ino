@@ -138,7 +138,7 @@ void initComms() {
 
     //get encoder gains values as a parameter
     float encGains[2] = {1, 1}; //gaintheta,gainxy
-    if (!arduinoNode.getParam("/sweeper/enc_gains", encGains, 2)) {
+    if (!arduinoNode.getParam("~enc_gains", encGains, 2)) {
       encGains[0] = 1;
       encGains[1] = 1;
       arduinoNode.logwarn("Failed to get Encoder Gains, Using defaults");
@@ -146,7 +146,7 @@ void initComms() {
 
     //get encoder gains values as a parameter
     float mouseGains[2] = {1, 1}; //gains
-    if (!arduinoNode.getParam("/sweeper/mouse_gains", mouseGains, 2)) {
+    if (!arduinoNode.getParam("~mouse_gains", mouseGains, 2)) {
       mouseGains[0] = 1;
       mouseGains[1] = 1;
       arduinoNode.logwarn("Failed to get Mouse Gains, Using defaults");
