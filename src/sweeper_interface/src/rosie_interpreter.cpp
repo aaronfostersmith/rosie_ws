@@ -107,9 +107,9 @@ public:
 
         //populate the output's headers
         imu_output.header.stamp = ros::Time::now();
-        imu_output.header.frame_id = "base_link";
+        imu_output.header.frame_id = "imu_frame";
         mag_output.header.stamp = ros::Time::now();
-        imu_output.header.frame_id = "base_link";
+        mag_output.header.frame_id = "imu_frame";
 
         //copy data from the input to the appropriate output fields
         //copy raw angular and linear imub_input
