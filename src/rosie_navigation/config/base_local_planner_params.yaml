@@ -10,7 +10,7 @@ DWAPlannerROS:
   min_rot_vel: 0.1
   escape_vel: -0.04
 
-  acc_lim_th: 0.1
+  acc_lim_th: 0.05
   acc_lim_x: 0.005
 
   yaw_goal_tolerance: .1
@@ -18,10 +18,10 @@ DWAPlannerROS:
 
   goal_distance_bias: 32
   path_distance_bias: 24
-  occdist_scale: 0.01
+  occdist_scale: 0.05
 
   
-  sim_time: 3
+  sim_time: 1
   
   holonomic_robot: false
 
