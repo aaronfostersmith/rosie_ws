@@ -58,7 +58,7 @@
        <joint name="${lr}_wheel_hinge" type="continuous">
           <parent link="base_link"/>
           <child link="${lr}_wheel"/>
-          <origin xyz="${+wheelBase/2-chassisRadius/2} ${tY*wheelBase/2} ${wheelRadius-(chassisHeight/2+groundClearance)}" rpy="0 0 0" /> 
+          <origin xyz=".05 ${tY*wheelBase/2} ${wheelRadius-(chassisHeight/2+groundClearance)}" rpy="0 0 0" /> 
           <axis xyz="0 1 0" rpy="0 0 0" />
           <limit effort="100" velocity="100"/>
           <joint_properties damping="0.0" friction="0.0"/>
