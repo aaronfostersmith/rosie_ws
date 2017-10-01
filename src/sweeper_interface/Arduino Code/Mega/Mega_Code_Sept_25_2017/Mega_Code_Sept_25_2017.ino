@@ -100,8 +100,8 @@ void setup() {
   interrupts();
 
   //****************************************IMU Initialization*************************************
-  gy_85 = Imu(10.0);
-  gy_85.isLpfOn = true;
+  gy_85 = Imu(5.0);
+  gy_85.isLpfOn = false;
   gy_85.Calibrate();
 
   //****************************************Mouse Initialization***********************************
