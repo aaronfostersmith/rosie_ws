@@ -78,7 +78,7 @@ public:
 		        ls_temp.time_increment = _ls_time_increment;
 		        ls_temp.scan_time = ls_temp.time_increment*(float)_ls_num_pts;
 		        ls_temp.range_min = 0.02;
-		        ls_temp.range_max = 1.001;
+		        ls_temp.range_max = 1.005;
 		        ls_temp.ranges.resize(_ls_num_pts); //4
                         ls_temp.header.stamp = ros::Time::now();
 			init = true;		    

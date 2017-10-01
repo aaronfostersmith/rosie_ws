@@ -1,11 +1,15 @@
+map_type: ObstacleLayer
+
 obstacle_range: 1.000
-raytrace_range: 1.001
+raytrace_range: 1.250
+
+inf_is_valid: true
 
 footprint: [[0.10, -0.125], [-0.2,-0.125], [-0.2, 0.125], [0.10, 0.125]]
-footprint_padding: 0.010
+footprint_padding: 0.005
 
-inflation_radius: 0.1
-cost_scaling_factor: 2
+inflation_radius: 0.2
+cost_scaling_factor: 10
 lethal_cost_threshold: 100
 
 observation_sources: laser_scan_sensor #point_cloud_sensor
