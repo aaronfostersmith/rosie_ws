@@ -25,8 +25,8 @@
 #define KD_L 0.01
 
 //encoder gains
-#define ENC_GAIN_X 1
-#define ENC_GAIN_THETA 1.25
+#define ENC_GAIN_X 1.0
+#define ENC_GAIN_THETA 1.0
 
 class Motor_Control
 {
