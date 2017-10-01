@@ -119,26 +119,30 @@ public:
         imu_output.linear_acceleration.x = imub_input.linear_acceleration[0];
         imu_output.linear_acceleration.y = imub_input.linear_acceleration[1];
         imu_output.linear_acceleration.z = imub_input.linear_acceleration[2];
-        /*	//covariances
-        	imu_output.orientation_covariance = {{0.1,0.0,0.0},
-        										 {0.0,0.1,0.0},
-        										 {0.0,0.0,0.1}};
-        	imu_output.angular_velocity_covariance = {{0.1,0.0,0.0},
-        											  {0.0,0.1,0.0},
-        											  {0.0,0.0,0.1}};
-        	imu_output.linear_acceleration_covariance = {{0.1,0.0,0.0},
-        												 {0.0,0.1,0.0},
-        												 {0.0,0.0,0.1}};
+        	
+        //covariances
+        imu_output.orientation_covariance = {{0.1,0.0,0.0},
+        				     {0.0,0.1,0.0},
+        				     {0.0,0.0,0.1}};
 
-        	//copy raw magnetic field data
-        	mag_output.magnetic_field.x = imub_input.magnetic_field[0];
-        	mag_output.magnetic_field.y = imub_input.magnetic_field[1];
-        	mag_output.magnetic_field.z = imub_input.magnetic_field[2];
-        	//covariance
-        	mag_output.magnetic_field_covariance = {{0.1,0.0,0.0},
-        											{0.0,0.1,0.0},
-        											{0.0,0.0,0.1}};
-        */
+        imu_output.angular_velocity_covariance = {{0.1,0.0,0.0},
+        					  {0.0,0.1,0.0},
+        					  {0.0,0.0,0.1}};
+
+        imu_output.linear_acceleration_covariance = {{0.1,0.0,0.0},
+        					     {0.0,0.1,0.0},
+        					     {0.0,0.0,0.1}};
+
+        //copy raw magnetic field data
+        mag_output.magnetic_field.x = imub_input.magnetic_field[0];
+        mag_output.magnetic_field.y = imub_input.magnetic_field[1];
+        mag_output.magnetic_field.z = imub_input.magnetic_field[2];
+        
+        //covariance
+        mag_output.magnetic_field_covariance = {{0.1,0.0,0.0},
+        					{0.0,0.1,0.0},
+        					{0.0,0.0,0.1}};
+        
         //publish
         imu_pub_.publish(imu_output);
         mag_pub_.publish(mag_output);
