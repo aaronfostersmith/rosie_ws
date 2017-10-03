@@ -105,7 +105,7 @@ void setup() {
   gy_85.Calibrate();
 
   //****************************************Mouse Initialization***********************************
- // mouseOdo.start();
+  // mouseOdo.start();
 
   //****************************************Rosserial Initialization*******************************
   initComms();
@@ -122,7 +122,7 @@ void initComms() {
 
   //advertise publishers
   arduinoNode.advertise(enc_odo);
- // arduinoNode.advertise(mouse_odo);
+  // arduinoNode.advertise(mouse_odo);
   arduinoNode.advertise(IMU_pub);
   //  arduinoNode.advertise(battVoltage_pub);
   //  arduinoNode.advertise(battCurrent_pub);
@@ -161,9 +161,9 @@ void initComms() {
 //callback function for velocity subscription
 void velocityCb(const geometry_msgs::Twist& msg) {
   //map linear and rotational vectors to wheel velocities [mm/s]
-  motorControl.set_motor_spd(LEFTMTR, (msg.linear.x * 1000 - msg.angular.z * 95)); //left_speed_out = cmd_vel.linear.x - cmd_vel.angular.z*ROBOT_WIDTH/2
-  motorControl.set_motor_spd(RIGHTMTR, (msg.linear.x * 1000 + msg.angular.z * 95)); //right_speed_out = cmd_vel.linear.x + cmd_vel.angular.z*ROBOT_WIDTH/2
+  motorControl.set_tar_spd((msg.linear.x * 1000 - msg.angular.z * 95), (msg.linear.x * 1000 + msg.angular.z * 95)); //left_speed_out = cmd_vel.linear.x - cmd_vel.angular.z*ROBOT_WIDTH/2 ,right_speed_out = cmd_vel.linear.x + cmd_vel.angular.z*ROBOT_WIDTH/2
 }
+
 //timer interrupt for motor PID update
 ISR(TIMER1_OVF_vect)
 {
@@ -173,21 +173,21 @@ ISR(TIMER1_OVF_vect)
 
 void loop() {
   //fire off events roughly on time
-//  long timeNow = millis();
-//  if (timeNow - lastMouseUpdate >= mousePeriod) {
-//    mouseOdo.update_mouse(mousePose);
-//    //publish pose data calculated from mouse data
-//    mousePose_msg.x = mousePose[0] / 1000;
-//    mousePose_msg.y = mousePose[1] / 1000;
-//    mousePose_msg.theta = mousePose[2];
-//    mouse_odo.publish(&mousePose_msg); //mousePose_msg is published to topic mouse_odo
-//    lastMouseUpdate = timeNow;
-//  }
+  //  long timeNow = millis();
+  //  if (timeNow - lastMouseUpdate >= mousePeriod) {
+  //    mouseOdo.update_mouse(mousePose);
+  //    //publish pose data calculated from mouse data
+  //    mousePose_msg.x = mousePose[0] / 1000;
+  //    mousePose_msg.y = mousePose[1] / 1000;
+  //    mousePose_msg.theta = mousePose[2];
+  //    mouse_odo.publish(&mousePose_msg); //mousePose_msg is published to topic mouse_odo
+  //    lastMouseUpdate = timeNow;
+  //  }
 
   long timeNow = millis();
   if (timeNow - lastEncUpdate >= encPeriod) {
     //publish pose data calculated from encoder data
-      motorControl.update_pose(encPose);
+    motorControl.update_pose(encPose);
     encPose_msg.x = encPose[0] / 1000; //x [m/s]
     encPose_msg.y = encPose[1] / 1000; //y
     encPose_msg.theta = encPose[2]; //theta

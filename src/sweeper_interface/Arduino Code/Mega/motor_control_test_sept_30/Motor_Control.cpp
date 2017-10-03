@@ -24,10 +24,13 @@ Motor_Control::Motor_Control(void)
   mSetSPD_L = 0;
   mCurPWR_R = 0;
   mCurPWR_L = 0;
+  mLastime_L = 0;
+  mLastime_R = 0;
+  mlastAccel = 0;
 
   //set power output limits
-  mPID_L.SetOutputLimits(0, 255);
-  mPID_R.SetOutputLimits(0, 255);
+  mPID_L.SetOutputLimits(-255, 255);
+  mPID_R.SetOutputLimits(-255, 255);
 
   //set sample time
   mPID_L.SetSampleTime(50);
@@ -39,45 +42,56 @@ Motor_Control::Motor_Control(void)
 
 }
 
-
-
-void Motor_Control::set_motor_spd(bool mtr, double spd)
+void Motor_Control::set_tar_spd(double lspd, double rspd)
 {
-  byte dir1, dir2, en;
+  mTarSPD_L = lspd;
+  mTarSPD_R = rspd;
 
-  if (abs(spd) < 10.0) spd = 0; //10mm/s min
+}
+
+void Motor_Control::set_motor_spd()
+{
+
+  //increment PID input speeds towards target speeds
+  double inc = ACC_LIM * (micros() - mlastAccel) / 1000000.0;
+  mSetSPD_L += constrain(mTarSPD_L - mSetSPD_L, -inc, inc);
+  mSetSPD_R += constrain(mTarSPD_R - mSetSPD_R, -inc, inc);
+  mlastAccel = micros();
+
+  //set the left side direction
+  if (mSetSPD_L) {
+    mSign_L = mSetSPD_L / abs(mSetSPD_L);
+  } else mSign_L = 0;
 
 
-  //Select left or right side pins
+  //set right side direction
+  if (mSetSPD_R) {
+    mSign_R = mSetSPD_R / abs(mSetSPD_R);
+  } else mSign_R = 0;
 
-  switch (mtr) {
-    case RIGHTMTR:
-      dir1 = IN1;
-      dir2 = IN2;
-      en = ENB;
-      mSetSPD_R = abs(spd);
-      mSign_R = spd / mSetSPD_R;
-      break;
-    case LEFTMTR:
-      dir1 = IN4;
-      dir2 = IN3;
-      en = ENA;
-      mSetSPD_L = abs(spd);
-      mSign_L = spd / mSetSPD_L;
-      break;
-    default:
-      return;
-      break;
-  }
-  //set the direction
-  if (spd < 0) {
-    digitalWrite(dir1, HIGH);
-    digitalWrite(dir2, LOW);
+
+
+  //set the  left direction
+  if (mSetSPD_L < 0) {
+    digitalWrite(IN4, HIGH);
+    digitalWrite(IN3, LOW);
   }
   else {
-    digitalWrite(dir1, LOW);
-    digitalWrite(dir2, HIGH);
+    digitalWrite(IN4, LOW);
+    digitalWrite(IN3, HIGH);
   }
+
+  //set the right direction
+  if (mSetSPD_R < 0) {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+  }
+  else {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+  }
+
+
 }
 
 void Motor_Control::update_pose(float pose[3])
@@ -86,7 +100,8 @@ void Motor_Control::update_pose(float pose[3])
 
   float d_right = (float)mCount_R * MM_PER_TICK; //pi*60mm/224
   float d_left = (float)mCount_L * MM_PER_TICK;
-  float d_center = ((d_right + d_left) / 2);
+  float d_center = ((d_right + d_left) / 2) * ENC_GAIN_X;
+
 
   //right hand rule; ccw is +, cw is -
   //x'= x + d_ctr*cos(theta)
@@ -96,24 +111,34 @@ void Motor_Control::update_pose(float pose[3])
   pose[1] += d_center * sin(pose[2]);
 
   //theta'd_baseline
-  pose[2] += ((d_right - d_left) / D_WHEELBASE);
-  //zero counts until next update
+  pose[2] += ((d_right - d_left) / D_WHEELBASE) * ENC_GAIN_THETA;
 
+  //make sure theta is within 0-> 2PI rad
+  if (pose[2] >= 6.283185307)
+  {
+    pose[2] -= 6.283185307;
+  } else if (pose[2] <= -6.283185307)
+  {
+    pose[2] += 6.283185307;
+  }
+
+  //zero counts until next update
   mCount_L = 0;
   mCount_R = 0;
 }
 
 void Motor_Control::update_PID()
 {
+
   //adaptive PID values; aggressive constants used above 30 mm/s
-  if (mSetSPD_R < 30)
+  if (abs(mSetSPD_R) < 30)
   {
     mPID_R.SetTunings(KP_L, KI_L, KD_L);
   } else
   {
     mPID_R.SetTunings(KP_H, KI_H, KD_H);
   }
-  if (mSetSPD_L < 30)
+  if (abs(mSetSPD_L) < 30)
   {
     mPID_L.SetTunings(KP_L, KI_L, KD_L);
   } else
@@ -127,7 +152,7 @@ void Motor_Control::update_PID()
     mCurPWR_R = 0;
   }
   else {
-    if (( micros() - mLastime_R) > 2244000 / mSetSPD_R) mCurSPD_R = 0.0; // stop motors from stalling at slow speeds; if this period > 3*expected period
+    if (( micros() - mLastime_R) > 2244000 / abs(mSetSPD_R)) mCurSPD_R = 0.0; // stop motors from stalling at slow speeds; if this period > 3*expected period
     mPID_R.Compute();
   }
 
@@ -137,19 +162,22 @@ void Motor_Control::update_PID()
     mCurPWR_L = 0;
   }
   else {
-    if (micros() - mLastime_L > 2244000 / mSetSPD_L) mCurSPD_L = 0.0;
+    if (micros() - mLastime_L > 2244000 / abs( mSetSPD_L)) mCurSPD_L = 0.0;
     mPID_L.Compute();
   }
 
-  analogWrite(ENA, mCurPWR_R);
-  analogWrite(ENB, mCurPWR_L);
+  analogWrite(ENA, abs(mCurPWR_R));
+  analogWrite(ENB, abs(mCurPWR_L));
 
 #ifdef debug
   Serial.print(mSetSPD_L);
   Serial.print(", ");
   Serial.println(mCurSPD_L);
+
 #endif
 
+  //increment motor speeds
+  set_motor_spd();
 }
 
 void Motor_Control::service_left_enc()
@@ -161,7 +189,7 @@ void Motor_Control::service_left_enc()
 
   temp = mCurtime_L - mLastime_L;
   if (temp > 1000) {
-    mCurSPD_L = MM_PER_TICK * 1000000 / (double) temp; //speed in mm/s
+    mCurSPD_L = (double)mSign_L * MM_PER_TICK * 1000000 / (double) temp; //speed in mm/s
     mLastime_L = mCurtime_L;
     mCount_L += mSign_L;
 
@@ -178,7 +206,7 @@ void Motor_Control::service_right_enc()
 
   temp = mCurtime_R - mLastime_R;
   if (temp > 1000) {
-    mCurSPD_R = MM_PER_TICK * 1000000 / (double) temp;
+    mCurSPD_R = mSign_R * MM_PER_TICK * 1000000 / (double) temp;
     mLastime_R = mCurtime_R;
     mCount_R += mSign_R;
 

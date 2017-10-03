@@ -36,9 +36,6 @@ void setup() {
   TCCR1B |= (1 << CS10) | (1 << CS11) |  (0 << CS12);    // 64 prescaler
   TIMSK1 |= (1 << TOIE1);   // enable timer overflow interrupt
   interrupts();
-
-  motorControl.set_motor_spd(LEFTMTR, 31);
-
 }
 
 //timer interrupt for motor PID update
@@ -50,5 +47,8 @@ ISR(TIMER1_OVF_vect)
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+motorControl.set_tar_spd(80, 0);
+delay(8000);
+motorControl.set_tar_spd(-80,0);
+delay(8000);
 }

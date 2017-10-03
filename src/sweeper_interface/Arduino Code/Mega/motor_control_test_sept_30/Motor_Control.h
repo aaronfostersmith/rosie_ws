@@ -12,17 +12,23 @@
 
 //physical constants
 #define MM_PER_TICK 0.84149803221 // pi*(diameter of wheel)/(# ticks per rotation of wheel)
-#define D_WHEELBASE 190 //mm
+#define D_WHEELBASE 185 //mm
+#define ACC_LIM 25.0 // mm/s^2
 
 //PID values
 //high
-#define KP_H 4
-#define KI_H 10
+#define KP_H 5
+#define KI_H 15
 #define KD_H 0
 //low
-#define KP_L 1.5
-#define KI_L 5
-#define KD_L 0.01
+#define KP_L 1.25
+#define KI_L 7
+#define KD_L 0
+
+//encoder gains
+#define ENC_GAIN_X 1.0
+#define ENC_GAIN_THETA 1.0
+
 
 class Motor_Control
 {
@@ -47,7 +53,7 @@ class Motor_Control
     Motor_Control(void); //constructor
     int get_left_enc(void);
     int get_right_enc(void);
-    void set_motor_spd(bool mtr, double spd);
+    void set_tar_spd(double lspd, double rspd);
     void update_pose(float pose[3]);
     void update_PID();
     void service_left_enc();
@@ -55,10 +61,13 @@ class Motor_Control
 
 
   private:
+    void set_motor_spd();
+    
+    double mTarSPD_R, mTarSPD_L; //desired target speed
     double mSetSPD_R, mSetSPD_L; //setpoint
     double mCurPWR_R, mCurPWR_L; //current motor power (output)
     double mCurSPD_R, mCurSPD_L; //current speed of the wheels (input)
-    long mLastime_L, mLastime_R; //encoder time tracking variables for debounce
+    long mLastime_L, mLastime_R, mlastAccel; //encoder time tracking variables for debounce
     int mSign_L, mCount_L, mSign_R, mCount_R; //direction and count variables
     PID mPID_L, mPID_R; //PID objects
 };
