@@ -1,28 +1,28 @@
 DWAPlannerROS:
   dwa: true
   
-  max_vel_x: 0.08
+  max_vel_x: 0.09
   max_vel_y: 0.0
   min_vel_y: 0.0
-  min_vel_x: 0.02
+  min_vel_x: 0.04
 
-  max_rot_vel: 0.3
-  min_rot_vel: 0.15
+  max_rot_vel: 0.2
+  min_rot_vel: 0.1
 
   acc_lim_th: 0.1
-  acc_lim_x: 0.025
+  acc_lim_x: 0.02
 
   yaw_goal_tolerance: .1
   xy_goal_tolerance: .1
 
   goal_distance_bias: 24
   path_distance_bias: 36
-  occdist_scale: 0.075
+  occdist_scale: 0.05
 
   
-  sim_time: 3
+  sim_time: 10
   sim_grannularity: 0.05
-
+  planner_patience: 60.0
 
   holonomic_robot: false
 
