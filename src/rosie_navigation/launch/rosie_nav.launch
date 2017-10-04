@@ -17,9 +17,9 @@
     <param name="base_frame" value="base_link" />
     <param name="odom_frame" value="odom" />
 
-    <param name="linearUpdate" value="0.1"/>
-    <param name="angularUpdate" value="0.5"/>
-    <param name="temporalUpdate" value="1"/>
+    <param name="linearUpdate" value="0.2"/>
+    <param name="angularUpdate" value="1.0"/>
+    <param name="temporalUpdate" value="1.5"/>
     <param name="resampleThreshold" value="0.5"/>
     <param name="particles" value="80"/>
 
@@ -36,7 +36,7 @@
   
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
     <param name="controller_frequency" value="15" />
-    <param name="planner_frequency" value="0.25" />
+    <param name="planner_frequency" value="0.5" />
   
     <remap from="cmd_vel" to="cmd_vel"/>
     <remap from="odom" to="odom"/>
