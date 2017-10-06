@@ -13,8 +13,14 @@
 
   </node>
 
-  <node pkg="sweeper_interface" type = "rosie_interpreter" name="rosie_interpreter">
+  <node pkg="sweeper_interface" type = "laser_builder" name="laser_builder">
     <param name="num_pts" value="64"/>
+  </node>
+
+  <node pkg="sweeper_interface" type = "imu_builder" name="imu_builder">
+  </node>
+
+  <node pkg="sweeper_interface" type = "pose_builder" name="pose_builder">
   </node>
 
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
