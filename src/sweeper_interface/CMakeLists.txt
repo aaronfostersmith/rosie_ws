@@ -8,9 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   rosserial_python
   message_generation
-  teleop_twist_keyboard
   robot_localization
-  imu_filter_madgwick
 
 )
 
@@ -52,6 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
   FILES
   Imu_bytes.msg
   laser_range.msg
+  Ticks.msg
   )
 
 ## Generate services in the 'srv' folder
@@ -197,7 +196,10 @@ include_directories(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(rosie_interpreter src/rosie_interpreter.cpp)
-target_link_libraries(rosie_interpreter ${catkin_LIBRARIES})
-add_dependencies(rosie_interpreter rosie_interpreter_cpp)
+#add_executable(rosie_interpreter src/rosie_interpreter.cpp)
+#target_link_libraries(rosie_interpreter ${catkin_LIBRARIES})
+#add_dependencies(rosie_interpreter rosie_interpreter_cpp)
 
+add_executable(pose_builder src/pose_builder.cpp)
+target_link_libraries(pose_builder ${catkin_LIBRARIES})
+add_dependencies(pose_builder pose_builder_cpp)
