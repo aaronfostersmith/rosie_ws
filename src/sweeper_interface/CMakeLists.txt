@@ -196,10 +196,14 @@ include_directories(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-#add_executable(rosie_interpreter src/rosie_interpreter.cpp)
-#target_link_libraries(rosie_interpreter ${catkin_LIBRARIES})
-#add_dependencies(rosie_interpreter rosie_interpreter_cpp)
-
 add_executable(pose_builder src/pose_builder.cpp)
 target_link_libraries(pose_builder ${catkin_LIBRARIES})
 add_dependencies(pose_builder pose_builder_cpp)
+
+add_executable(laser_builder src/laser_builder.cpp)
+target_link_libraries(laser_builder ${catkin_LIBRARIES})
+add_dependencies(laser_builder laser_builder_cpp)
+
+add_executable(imu_builder src/imu_builder.cpp)
+target_link_libraries(imu_builder ${catkin_LIBRARIES})
+add_dependencies(imu_builder imu_builder_cpp)
