@@ -77,7 +77,9 @@ private:
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "laser_builder");
-        
+
+	SubAndPub subAndPubObj;    
+
     ros::spin();
     return 0;
 }
