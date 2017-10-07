@@ -17,49 +17,56 @@ public:
     
     void ImuCallback(const sweeper_interface::Imu_bytes &imub_input)
     {
-       //create an objects for output
-            sensor_msgs::Imu imu_output;
-            sensor_msgs::MagneticField mag_output;
+        
+        static bool init;
+        //create an objects for output
+        static sensor_msgs::Imu imu_output;
+        static sensor_msgs::MagneticField mag_output;
+        
+        if(!init)
+        {
+                        mag_output.header.frame_id = "imu_frame";
+                        imu_output.header.frame_id = "imu_frame";
+ 
+            imu_output.orientation_covariance[0] = 0.01;
+            imu_output.orientation_covariance[4] = 0.01;
+            imu_output.orientation_covariance[8] = 0.01;
+
+            imu_output.angular_velocity_covariance[0] =0.01;
+            imu_output.angular_velocity_covariance[4] =0.01;
+            imu_output.angular_velocity_covariance[8] =0.01;
+
+            imu_output.linear_acceleration_covariance[0] =0.01;
+            imu_output.linear_acceleration_covariance[4] =0.01;
+            imu_output.linear_acceleration_covariance[8] =0.01;
+                      
+            mag_output.magnetic_field_covariance[0] =0.01;
+            mag_output.magnetic_field_covariance[0] =0.01;
+            mag_output.magnetic_field_covariance[0] =0.01;
+            
+            init =true;
+        }
+       
 
             //populate the output's headers
             imu_output.header.stamp = ros::Time::now();
-            imu_output.header.frame_id = "imu_frame";
             mag_output.header.stamp = ros::Time::now();
-            mag_output.header.frame_id = "imu_frame";
 
             //copy data from the input to the appropriate output fields
             //copy raw angular and linear imub_input
             imu_output.angular_velocity.x = imub_input.angular_velocity[0];
             imu_output.angular_velocity.y = imub_input.angular_velocity[1];
             imu_output.angular_velocity.z = imub_input.angular_velocity[2];
+            
             imu_output.linear_acceleration.x = imub_input.linear_acceleration[0];
             imu_output.linear_acceleration.y = imub_input.linear_acceleration[1];
             imu_output.linear_acceleration.z = imub_input.linear_acceleration[2];
 
-    /*
-            //covariances
-            imu_output.orientation_covariance = {{0.1,0.0,0.0},
-                                 {0.0,0.1,0.0},
-                                 {0.0,0.0,0.1}};
-
-            imu_output.angular_velocity_covariance = {{0.1,0.0,0.0},
-                                  {0.0,0.1,0.0},
-                                  {0.0,0.0,0.1}};
-
-            imu_output.linear_acceleration_covariance = {{0.1,0.0,0.0},
-                                     {0.0,0.1,0.0},
-                                     {0.0,0.0,0.1}};
-    */
             //copy raw magnetic field data
             mag_output.magnetic_field.x = imub_input.magnetic_field[0];
             mag_output.magnetic_field.y = imub_input.magnetic_field[1];
             mag_output.magnetic_field.z = imub_input.magnetic_field[2];
-           /* 
-            //covariance
-            mag_output.magnetic_field_covariance = {{0.1,0.0,0.0},
-                                {0.0,0.1,0.0},
-                                {0.0,0.0,0.1}};
-            */
+      
             //publish
             imu_pub_.publish(imu_output);
             mag_pub_.publish(mag_output);
