@@ -25,8 +25,8 @@ public:
         
         if(!init)
         {
-                        mag_output.header.frame_id = "imu_frame";
-                        imu_output.header.frame_id = "imu_frame";
+                        mag_output.header.frame_id = "imu_link";
+                        imu_output.header.frame_id = "imu_link";
  
             imu_output.orientation_covariance[0] = 0.01;
             imu_output.orientation_covariance[4] = 0.01;
