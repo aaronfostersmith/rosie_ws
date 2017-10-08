@@ -46,12 +46,10 @@ void Motor_Control::set_tar_spd(double lspd, double rspd)
 {
   mTarSPD_L = lspd;
   mTarSPD_R = rspd;
-
 }
 
 void Motor_Control::set_motor_spd()
 {
-
   //increment PID input speeds towards target speeds
   double inc = ACC_LIM * (micros() - mlastAccel) / 1000000.0;
   mSetSPD_L += constrain(mTarSPD_L - mSetSPD_L, -inc, inc);
@@ -63,13 +61,10 @@ void Motor_Control::set_motor_spd()
     mSign_L = mSetSPD_L / abs(mSetSPD_L);
   } else mSign_L = 0;
 
-
   //set right side direction
   if (mSetSPD_R) {
     mSign_R = mSetSPD_R / abs(mSetSPD_R);
   } else mSign_R = 0;
-
-
 
   //set the  left direction
   if (mSetSPD_L < 0) {
@@ -90,8 +85,6 @@ void Motor_Control::set_motor_spd()
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, HIGH);
   }
-
-
 }
 
 void Motor_Control::get_EncTicks(int ticks[2])
@@ -130,17 +123,16 @@ void Motor_Control::update_PID()
     mCurPWR_R = 0;
   }
   else {
-    if (( micros() - mLastime_R) > 2244000 / abs(mSetSPD_R)) mCurSPD_R = 0.0; // stop motors from stalling at slow speeds; if this period > 3*expected period
+    if (( micros() - mLastime_R) >  3000000.0*MM_PER_TICK/abs(mSetSPD_R)) mCurSPD_R = 0.0; // stop motors from stalling at slow speeds; if this period > 3*expected period (3* MM_PER_TICK/setspeed*10^6]
     mPID_R.Compute();
   }
-
 
   //LEFT PID
   if (mSetSPD_L == 0) {
     mCurPWR_L = 0;
   }
   else {
-    if (micros() - mLastime_L > 2244000 / abs( mSetSPD_L)) mCurSPD_L = 0.0;
+    if (micros() - mLastime_L > 3000000.0*MM_PER_TICK) mCurSPD_L = 0.0;
     mPID_L.Compute();
   }
 
@@ -151,7 +143,6 @@ void Motor_Control::update_PID()
   Serial.print(mSetSPD_L);
   Serial.print(", ");
   Serial.println(mCurSPD_L);
-
 #endif
 
   //increment motor speeds
@@ -166,11 +157,10 @@ void Motor_Control::service_left_enc()
   long mCurtime_L = micros();
 
   temp = mCurtime_L - mLastime_L;
-  if (temp > 1000) {
-    mCurSPD_L = (double)mSign_L * MM_PER_TICK * 1000000 / (double) temp; //speed in mm/s
+  if (temp > 2000) {
+    mCurSPD_L = mSign_L * MM_PER_TICK * 1000000 / (double) temp; //speed in mm/s
     mLastime_L = mCurtime_L;
     mCount_L += mSign_L;
-
   }
   interrupts();
 }
@@ -183,11 +173,10 @@ void Motor_Control::service_right_enc()
   long mCurtime_R = micros();
 
   temp = mCurtime_R - mLastime_R;
-  if (temp > 1000) {
+  if (temp > 2000) {
     mCurSPD_R = mSign_R * MM_PER_TICK * 1000000 / (double) temp;
     mLastime_R = mCurtime_R;
     mCount_R += mSign_R;
-
   }
   interrupts();
 }

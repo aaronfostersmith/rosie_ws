@@ -13,7 +13,7 @@
 //physical constants
 #define MM_PER_TICK 0.84149803221 // pi*(diameter of wheel)/(# ticks per rotation of wheel)
 #define D_WHEELBASE 185 //mm
-#define ACC_LIM 25.0 // mm/s^2
+#define ACC_LIM 40.0 // mm/s^2
 
 //PID values
 //high
