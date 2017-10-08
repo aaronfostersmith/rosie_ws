@@ -4,31 +4,31 @@ TrajectoryPlannerROS:
  max_vel_y: 0.0
  min_vel_y: 0.0
 
- max_vel_theta: 0.5
- min_vel_theta: -0.5
- min_in_place_vel_theta: 0.2
+ max_vel_theta: 1.0
+ min_vel_theta: -1.0
+ min_in_place_vel_theta: 0.3
 
  escape_vel: -0.02
 
- acc_lim_theta: 0.3
- acc_lim_x: 0.025
+ acc_lim_theta: 0.5
+ acc_lim_x: 0.040
 
 
  yaw_goal_tolerance: 0.1
  xy_goal_tolerance: 0.10
 
- sim_time: 0.25
+ sim_time: 1.5
  sim_granularity: 0.025
  vx_sample: 6
  vy_samples: 0
  vtheta_samples: 20
 
  meter_scoring: true
- pdist_scale: 2.0
- gdist_scale: 0.8
+ pdist_scale: 0.8
+ gdist_scale: 0.6
  occdist_scale: 0.02
  heading_scoring: false
- heading_lookahead: 0.25
+ heading_lookahead: 0.2
 
  dwa: true
 

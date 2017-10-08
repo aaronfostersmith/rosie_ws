@@ -39,7 +39,7 @@
     <param name="planner_frequency" value="0.5" />
   
     <remap from="cmd_vel" to="cmd_vel"/>
-    <remap from="odom" to="odom"/>
+    <remap from="odom" to="/odometry/filtered"/>
     <remap from="scan" to="/sweeper/scan"/>  
   </node>
 
