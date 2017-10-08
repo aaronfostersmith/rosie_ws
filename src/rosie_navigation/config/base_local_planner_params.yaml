@@ -24,9 +24,12 @@ TrajectoryPlannerROS:
  vtheta_samples: 20
 
  meter_scoring: true
- pdist_scale: 0.4
+ pdist_scale: 2.0
  gdist_scale: 0.8
- occdist_scale: 0.01
+ occdist_scale: 0.02
+ heading_scoring: false
+ heading_lookahead: 0.25
+
  dwa: true
 
  holonomic_robot: false
