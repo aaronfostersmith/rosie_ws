@@ -7,9 +7,10 @@
       <param name="sensor_timeout" value="0.5"/>
       <param name="two_d_mode" value="true"/>
 
-     <param name="imu0" value="/imu/data_raw"/>  
+      <param name="imu0" value="/imu/data_raw"/>  
 
       <param name="pose0" value="/odom/encPose"/>
+      <param name="pose0_differential" value="true" />
 	  
       <param name="map_frame" value="map"/>
       <param name="odom_frame" value="odom"/>
@@ -21,7 +22,7 @@
                                     false, false, false, 
                                     false, false, false,
                                     false, false, false]</rosparam>
-
+    
         
 	<rosparam param="imu0_config">[false, false, false, 
                                    false, false, false, 
