@@ -1,5 +1,13 @@
 <launch>
     
+  <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick" output="screen" respawn="false" >
+    <param name="world_frame" value="enu" />
+    <param name="fixed_frame" value="odom" />
+    <param name="use_mag" value="false" />
+    <param name="publish_tf" value="false" /> 
+  </node>
+
+
   
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
     
