@@ -23,13 +23,21 @@
   <node pkg="sweeper_interface" type = "pose_builder" name="pose_builder">
   </node>
 
+  <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick" output="screen" respawn="false" >
+    <param name="world_frame" value="enu" />
+    <param name="fixed_frame" value="odom" />
+    <param name="use_mag" value="false" />
+    <param name="publish_tf" value="false" /> 
+  </node>
+
+    
     <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se" clear_params="true">
     
       <param name="frequency" value="10"/>
       <param name="sensor_timeout" value="0.5"/>
       <param name="two_d_mode" value="true"/>
 
-      <param name="imu0" value="/imu/data_raw"/>  
+      <param name="imu0" value="/imu/data"/>  
 
       <param name="pose0" value="/odom/encPose"/>
       <!--param name="pose0_differential" value="true" /-->
