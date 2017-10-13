@@ -28,7 +28,7 @@ public:
                         mag_output.header.frame_id = "imu_link";
                         imu_output.header.frame_id = "imu_link";
  
-            imu_output.orientation_covariance[0] = 0.01;
+            imu_output.orientation_covariance[0] = -1; //no orientation data produced
             imu_output.orientation_covariance[4] = 0.01;
             imu_output.orientation_covariance[8] = 0.01;
 
