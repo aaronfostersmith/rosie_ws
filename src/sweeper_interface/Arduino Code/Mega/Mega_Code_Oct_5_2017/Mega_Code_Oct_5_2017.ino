@@ -133,7 +133,7 @@ void initComms() {
 //callback function for velocity subscription
 void velocityCb(const geometry_msgs::Twist& msg) {
   //map linear and rotational vectors to wheel velocities [mm/s]
-  motorControl.set_tar_spd((msg.linear.x * 1000 - msg.angular.z * 95), (msg.linear.x * 1000 + msg.angular.z * 95)); //left_speed_out = cmd_vel.linear.x - cmd_vel.angular.z*ROBOT_WIDTH/2 ,right_speed_out = cmd_vel.linear.x + cmd_vel.angular.z*ROBOT_WIDTH/2
+  motorControl.set_tar_spd((msg.linear.x * 1000 - msg.angular.z * 185), (msg.linear.x * 1000 + msg.angular.z * 185)); //left_speed_out = cmd_vel.linear.x - cmd_vel.angular.z*ROBOT_WIDTH/2 ,right_speed_out = cmd_vel.linear.x + cmd_vel.angular.z*ROBOT_WIDTH/2
 }
 
 //timer interrupt for motor PID update
