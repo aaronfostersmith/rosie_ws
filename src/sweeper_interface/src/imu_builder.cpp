@@ -32,17 +32,17 @@ public:
             imu_output.orientation_covariance[4] = 0.01;
             imu_output.orientation_covariance[8] = 0.01;
 
-            imu_output.angular_velocity_covariance[0] =0.01;
-            imu_output.angular_velocity_covariance[4] =0.01;
-            imu_output.angular_velocity_covariance[8] =0.01;
+            imu_output.angular_velocity_covariance[0] =0.001;
+            imu_output.angular_velocity_covariance[4] =0.001;
+            imu_output.angular_velocity_covariance[8] =0.001;
 
-            imu_output.linear_acceleration_covariance[0] =0.01;
-            imu_output.linear_acceleration_covariance[4] =0.01;
-            imu_output.linear_acceleration_covariance[8] =0.01;
+            imu_output.linear_acceleration_covariance[0] =0.001;
+            imu_output.linear_acceleration_covariance[4] =0.001;
+            imu_output.linear_acceleration_covariance[8] =0.001;
                       
-            mag_output.magnetic_field_covariance[0] =0.01;
-            mag_output.magnetic_field_covariance[0] =0.01;
-            mag_output.magnetic_field_covariance[0] =0.01;
+            mag_output.magnetic_field_covariance[0] =0.001;
+            mag_output.magnetic_field_covariance[4] =0.001;
+            mag_output.magnetic_field_covariance[8] =0.001;
             
             init =true;
         }
