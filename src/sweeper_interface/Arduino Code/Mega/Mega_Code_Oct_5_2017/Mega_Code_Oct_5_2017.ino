@@ -11,7 +11,7 @@ Motor_Control motorControl; //motor control object
 #include "Imu.h"
 Imu gy_85;
 float imuContainer[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0,};
-const int imuPeriod = 50; //ms
+const int imuPeriod = 40; //ms
 long lastImuUpdate = 0;
 
 //**************Rosserial Variables and Objects******************

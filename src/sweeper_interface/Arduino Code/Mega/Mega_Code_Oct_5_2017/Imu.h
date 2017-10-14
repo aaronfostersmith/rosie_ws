@@ -26,6 +26,7 @@ class Imu
     ADXL345 acc;
     HMC5883L mag;
     ITG3200 gyr;
+    float _accOffsets[3];
 };
 
 #endif

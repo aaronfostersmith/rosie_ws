@@ -26,8 +26,10 @@ Imu::Imu(float filtCutFreq)
 
   //turn on the accelerometer
   acc.powerOn();
+  //set accelerometer resolution
+  acc.setFullResBit(true);
   //set accelerometer range
-  acc.setRangeSetting(8);
+  acc.setRangeSetting(16);
   //set hardware offsets to 0
   acc.setAxisOffset(0, 0, 0);
 
@@ -48,8 +50,8 @@ void Imu::Calibrate()
 {
 
   int accelRaw[3]; //temp container for readings
-  int temp[3]={0,0,0}; //temp container for averaging
-  
+  float temp[3] = {0, 0, 0}; //temp container for averaging
+
   for (int i = 0; i < 20; i++) {
     //get a new reading from the accelerometer
     acc.readAccel(&accelRaw[0], &accelRaw[1], &accelRaw[2]);
@@ -59,16 +61,19 @@ void Imu::Calibrate()
     temp[1] += accelRaw[1];
     temp[2] += accelRaw[2];
   }
-  temp[0] /= -20;
-  temp[1] /= -20;
-  temp[2] /= -20;
+  temp[0] = temp[0] * 0.038259 / 20;
+   temp[1] = temp[1] * 0.038259 / 20;
+  temp[2] = temp[2] * 0.038259 / 20 -9.81;
+
+  _accOffsets[0] = temp[0];
+  _accOffsets[1] = temp[1];
+  _accOffsets[2] = temp[2];
 
   //set the offset registers in ADXL345
-  acc.setAxisOffset(temp[0], temp[1], temp[2]);
+  //acc.setAxisOffset(temp[0], temp[1], temp[2]); not using due to resolution limit
 
   //set gyroscope offsets with 20 samples at 20 ms per/sample
   gyr.zeroCalibrate(20, 20);
-
 
 }
 
@@ -93,10 +98,10 @@ void Imu::update_imu(float imuBytes[9])
   int accelRaw[3];
   acc.readAccel(&accelRaw[0], &accelRaw[1], &accelRaw[2]); //read the accelerometer values and store them in variables  x,y,z
 
-  //scale accelerometer data to m/s^2. 10 bit res : scale = 8/2^10*9.81 [m/s^2]=0.0076641
-  imuBytes[6] = accelRaw[0] * 0.076641;
-  imuBytes[7] = accelRaw[1] * 0.076641;
-  imuBytes[8] = accelRaw[2] * 0.076641;
+  //scale accelerometer data to m/s^2. scaling factor 0.0039*9.81= 0.038259
+  imuBytes[6] = accelRaw[0] * 0.038259 - _accOffsets[0];
+  imuBytes[7] = accelRaw[1] * 0.038259 - _accOffsets[1];
+  imuBytes[8] = accelRaw[2]   * 0.038259 - _accOffsets[2];
 
   if (isLpfOn) {
     //filter raw data

@@ -56,7 +56,7 @@
 
         
 	<rosparam param="imu0_config">[false, false, false, 
-                                   false, false, false, 
+                                   false, false, true, 
                                    false, false, false, 
                                    false, false, true,
                                    false, false, false]</rosparam>
