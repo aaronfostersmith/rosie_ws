@@ -33,6 +33,14 @@ void WheelCallback(const sweeper_interface::Ticks &ticks)
     x += s_c*cos(th); 
     y += s_c*sin(th); 
     th += (s_r-s_l)/WheelBase;
+    
+    if (th > 6.28318530718){
+        th -= 6.28318530718;
+    } else if(th <0)
+    {
+        th+=6.28318530718;
+    }
+    //constrain theta to 0->2pi
     //ROS_WARN("s_l = %d", s_l);
 }
 
