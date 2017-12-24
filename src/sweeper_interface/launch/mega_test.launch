@@ -6,7 +6,5 @@
     <param name="baud" value="115200"/>
   </node>
 
-  <node pkg="sweeper_interface" type = "pose_builder" name="pose_builder" output="screen">
-  </node>
 
 </launch>

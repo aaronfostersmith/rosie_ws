@@ -24,14 +24,12 @@ Imu::Imu(float filtCutFreq)
 
 {
 
-#ifdef debug
-  Serial.begin(115200);
-  Serial.print("Init Start...");
-#endif
   //turn on the accelerometer
   acc.powerOn();
-  //set accelerometer range to +- 4g
-  acc.setRangeSetting(4);
+  //set accelerometer resolution
+  acc.setFullResBit(true);
+  //set accelerometer range
+  acc.setRangeSetting(16);
   //set hardware offsets to 0
   acc.setAxisOffset(0, 0, 0);
 
@@ -45,67 +43,38 @@ Imu::Imu(float filtCutFreq)
   // Set the measurement mode to Continuous
   mag.SetMeasurementMode(Measurement_Continuous);
 
-  //initialize offsets
-  mOffsets[0] = 0;
-  mOffsets[1] = 0;
-  mOffsets[2] = 0;
-  mOffsets[3] = 0;
-  mOffsets[4] = 0;
-  mOffsets[5] = 0;
-#ifdef debug
-  Serial.println("done");
-#endif
 }
 
 
 void Imu::Calibrate()
 {
 
-#ifdef debug
-  Serial.print("Calibrating...");
-#endif
-
   int accelRaw[3]; //temp container for readings
-  float readings[3]; //temp container for current readings
-
-  for (int i = 0; i <= 20; i++) {
-    //get a new reading from the accelerometer
-    acc.readAccel(&accelRaw[0], &accelRaw[1], &accelRaw[2]);
-    delay(5);
-    //avg the results
-    mOffsets[3] += accelRaw[0];
-    mOffsets[4] += accelRaw[1];
-    mOffsets[5] += accelRaw[2];
-  }
-  mOffsets[3] /= 20;
-  mOffsets[4] /= 20;
-  mOffsets[5] /= 20;
+  float temp[3] = {0, 0, 0}; //temp container for averaging
 
   for (int i = 0; i < 20; i++) {
-    gyr.readGyro(&readings[0], &readings[1], &readings[2]);
-    delay(5);
-    mOffsets[0] += readings[0];
-    mOffsets[1] += readings[1];
-    mOffsets[2] += readings[2];
+    //get a new reading from the accelerometer
+    acc.readAccel(&accelRaw[0], &accelRaw[1], &accelRaw[2]);
+    delay(20);
+    //avg the results
+    temp[0] += accelRaw[0];
+    temp[1] += accelRaw[1];
+    temp[2] += accelRaw[2];
   }
-  
-  mOffsets[0] /= 20;
-  mOffsets[1] /= 20;
-  mOffsets[2] /= 20;
+  temp[0] = temp[0] * 0.038259 / 20;
+   temp[1] = temp[1] * 0.038259 / 20;
+  temp[2] = temp[2] * 0.038259 / 20 -9.81;
 
-#ifdef debug
-  Serial.print("done with offsets: A:");
-  for (int i = 3; i < 6; i ++) {
-    Serial.print(mOffsets[i]);
-    Serial.print(", ");
-  }
-  Serial.print("G: ");
-  for (int i = 0; i < 3; i ++) {
-    Serial.print(mOffsets[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-#endif
+  _accOffsets[0] = temp[0];
+  _accOffsets[1] = temp[1];
+  _accOffsets[2] = temp[2];
+
+  //set the offset registers in ADXL345
+  //acc.setAxisOffset(temp[0], temp[1], temp[2]); not using due to resolution limit
+
+  //set gyroscope offsets with 20 samples at 20 ms per/sample
+  gyr.zeroCalibrate(20, 20);
+
 }
 
 
@@ -113,31 +82,26 @@ void Imu::Calibrate()
 void Imu::update_imu(float imuBytes[9])
 {
 
-#ifdef debug
-  Serial.print("Updating...");
-#endif
-
   //pull raw Magnetometer data
   MagnetometerRaw raw = mag.ReadRawAxis();
   imuBytes[0] = raw.XAxis;
   imuBytes[1] = raw.YAxis;
   imuBytes[2] = raw.ZAxis;
 
-  // pull raw gyro data and subtract offset
-
+  // pull raw gyro data
   gyr.readGyro(&imuBytes[3], &imuBytes[4], &imuBytes[5]);
-  imuBytes[3] = imuBytes[3] - mOffsets[0];
-  imuBytes[4] = imuBytes[4] - mOffsets[1];
-  imuBytes[5] = imuBytes[5] - mOffsets[2];
+  imuBytes[3] = imuBytes[3];
+  imuBytes[4] = imuBytes[4];
+  imuBytes[5] = imuBytes[5];
 
-  // pull raw accelerometer data and subtract offset
+  // pull raw accelerometer data
   int accelRaw[3];
   acc.readAccel(&accelRaw[0], &accelRaw[1], &accelRaw[2]); //read the accelerometer values and store them in variables  x,y,z
 
-  //scale accelerometer data to m/s^2. 10 bit res : scale = 8/2^10*9.81 [m/s^2]=0.0076641
-  imuBytes[6] = (accelRaw[0]  - mOffsets[3]) * 0.076641;
-  imuBytes[7] = (accelRaw[1] - mOffsets[4]) * 0.076641;
-  imuBytes[8] = (accelRaw[2]  - mOffsets[5]) * 0.076641+ 9.81;
+  //scale accelerometer data to m/s^2. scaling factor 0.0039*9.81= 0.038259
+  imuBytes[6] = accelRaw[0] * 0.038259 - _accOffsets[0];
+  imuBytes[7] = accelRaw[1] * 0.038259 - _accOffsets[1];
+  imuBytes[8] = accelRaw[2]   * 0.038259 - _accOffsets[2];
 
   if (isLpfOn) {
     //filter raw data
@@ -153,13 +117,5 @@ void Imu::update_imu(float imuBytes[9])
 
   }
 
-#ifdef debug
-  Serial.print("Done: ");
-  for (int i = 0; i < 9; i++) {
-    Serial.print(imuBytes[i]);
-    Serial.print(", ");
-  }
-  Serial.println();
-#endif
 }
 
