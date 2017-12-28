@@ -50,7 +50,6 @@ find_package(catkin REQUIRED COMPONENTS
   FILES
   Imu_bytes.msg
   laser_range.msg
-  Ticks.msg
   )
 
 ## Generate services in the 'srv' folder
@@ -196,9 +195,9 @@ include_directories(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-#add_executable(pose_builder src/pose_builder.cpp)
-#target_link_libraries(pose_builder ${catkin_LIBRARIES})
-#add_dependencies(pose_builder pose_builder_cpp)
+add_executable(twist_to_vel src/twist_to_vel.cpp)
+target_link_libraries(twist_to_vel ${catkin_LIBRARIES})
+add_dependencies(twist_to_vel twist_to_vel_cpp)
 
 add_executable(laser_builder src/laser_builder.cpp)
 target_link_libraries(laser_builder ${catkin_LIBRARIES})

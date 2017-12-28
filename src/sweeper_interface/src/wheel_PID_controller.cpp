@@ -18,7 +18,7 @@ class WheelPID
         WheelPID()
         {
             //create publishers
-            pwr_output_pub_ = n_.advertise<std_msgs::Float32>("pwr_cmd_", 10);
+            pwr_output_pub_ = n_.advertise<std_msgs::Float32>("pwr_cmd", 10);
             wheel_vel_pub_ = n_.advertise<std_msgs::Float32>("wheel_vel",10);
             
 
@@ -30,19 +30,18 @@ class WheelPID
             ros::param::param<double>("~Kp", Kp_, 256.0);
             ros::param::param<double>("~Ki", Ki_, 1.0);
             ros::param::param<double>("~Kd", Kd_, 1.0);
-            ros::param::param<double>("pwr_out_min", pwr_out_min_, 0);
+            ros::param::param<double>("pwr_out_min", pwr_out_min_, -255);
             ros::param::param<double>("pwr_out_max", pwr_out_max_, 255);
-            ros::param::param<double>("wheel_dia", wheel_dia_, 0.06);
+            ros::param::param<double>("wheel_dia", wheel_dia_, 0.075);
             ros::param::param<double>("ticks_per_rev", ticks_per_rev_, 40*13);
             ros::param::param<int>("encoder_min", encoder_min_, -32768);
             ros::param::param<int>("encoder_max", encoder_max_, 32768);
             ros::param::param<double>("backlash", backlash_, 7);
-            ros::param::param<double>("windup_limit", windup_limit_, 1000);
-            ros::param::param<double>("min_vel", min_vel_, 0.1);
-            ros::param::param<double>("vel_cmd_timeout", vel_cmd_timeout_, 10);
+            ros::param::param<double>("~windup_limit", windup_limit_, 255);
+            ros::param::param<double>("~min_vel", min_vel_, 0.1);
+            ros::param::param<double>("~vel_cmd_timeout", vel_cmd_timeout_, 0.5);
             
-            windup_limit_ = fabsf(windup_limit_);
-        
+            windup_limit_ = fabsf(windup_limit_);        
             
             //initialize variables
             
@@ -63,16 +62,20 @@ class WheelPID
             meters_per_tick_ = 3.14159265359*wheel_dia_/ticks_per_rev_;
             encoder_wrap_low_ = (encoder_max_ - encoder_min_)*0.3 + encoder_min_;
             encoder_wrap_high_ = (encoder_max_ - encoder_min_)*0.7 + encoder_min_;
-            
-            
 
         }
         void setPtCB (const std_msgs::Float32 &vel)
         {
             //update setpoint
-            target_vel_ = vel.data;
+            if(vel.data != target_vel_ )
+            {
+                ROS_DEBUG("Received new velocity: %f", vel.data);
+                target_vel_ = vel.data;
+                integral_ = 0;
+            }
+            
             last_vel_cmd_ = ros::Time::now().toSec();
-            ROS_DEBUG("Got new target_vel: %f", target_vel_);
+            
         }
         void encTicksCB (const std_msgs::Int16 &new_ticks)
         {
@@ -91,9 +94,10 @@ class WheelPID
                 ROS_DEBUG("New wrap_mult: %d", wrap_mult_);
 
             }
-            wheel_prev_ = wheel_latest_;
-            wheel_latest_ = new_ticks.data+wrap_mult_*(encoder_max_-encoder_min_)* meters_per_tick_;
-            old_ticks_ = new_ticks.data;
+             old_ticks_ = new_ticks.data;
+
+            wheel_latest_ = new_ticks.data+wrap_mult_*(encoder_max_-encoder_min_);
+           
             
             //estimate current velocity
             updateVel();
@@ -101,7 +105,8 @@ class WheelPID
             //update pid
             if(ros::Time::now().toSec() - last_vel_cmd_ > vel_cmd_timeout_)
             {
-                target_vel_ = 0;               
+                target_vel_ = 0;           
+                integral_=0;
             }
             updatePID();
             
@@ -132,50 +137,61 @@ class WheelPID
             if (integral_ > windup_limit_)
             {
                 integral_ = windup_limit_;
+                ROS_DEBUG("Integral windup limit reached integral_: %f", integral_);
             }
             if (integral_ < -windup_limit_)
             {
                 integral_ = -windup_limit_;
+                ROS_DEBUG("Integral windup limit reached integral_: %f", integral_);
             }
             derivative_  = (error_ - prev_error_)/PID_dt;
             prev_error_ = error_;
             
             //calculate new output
             pwr_out_ = Kp_*error_ + Ki_*integral_ + Kd_*derivative_;
-           
+            ROS_DEBUG("error,integral,derivative: %f,%f,%f",error_, integral_, derivative_);
             //limit output to max/min values
             if (pwr_out_ > pwr_out_max_) 
             {
                 pwr_out_ = pwr_out_max_;
+                ROS_DEBUG("power output limit reached pwr_out_max_: %f", pwr_out_max_);
+
             }
             if (pwr_out_ < pwr_out_min_) 
             {
                 pwr_out_ = pwr_out_min_;
+                ROS_DEBUG("power output limit reached pwr_out_max_: %f", pwr_out_max_);
             }
             
             if (target_vel_ ==0)
             {
                 pwr_out_ = 0;
+                integral_ = 0;
                
             }
         }
-    
+
         void updateVel()
         {
             //estimate velocity from meters_per_tick and dt
             float dt = ros::Time::now().toSec() - last_wheel_update_;
-            last_wheel_update_  = ros::Time::now().toSec();
+            
                 
             if(wheel_latest_ == wheel_prev_) //low velocity
             {
-                if(fabsf(meters_per_tick_)/dt < min_vel_)
+                if(meters_per_tick_/dt < min_vel_)
                 {
                     cur_vel_ = 0;
+                    //ROS_DEBUG("Estimated velocity is too low: setting velocity to 0");
+
                 }
             }else
             {
-                cur_vel_ = (wheel_latest_ - wheel_prev_)*meters_per_tick_/dt;
+                last_wheel_update_  = ros::Time::now().toSec();
+                cur_vel_ = ((wheel_latest_ - wheel_prev_)*meters_per_tick_/dt);
+                wheel_prev_ = wheel_latest_;
             }
+            
             std_msgs::Float32 vel_msg;
             vel_msg.data = cur_vel_;
             wheel_vel_pub_.publish(vel_msg);
@@ -200,7 +216,7 @@ class WheelPID
         double target_vel_, cur_vel_, pwr_out_;  //groundspeed setpoint r(t) [m/s], current groundspeed process variable y(t) [m/s], power output control variable u(t) [0-255]
         double error_, integral_, derivative_, prev_error_;
         int old_ticks_, wrap_mult_;
-        double wheel_latest_, wheel_prev_;
+        int wheel_latest_, wheel_prev_;
         double vel_cmd_timeout_;
         double   last_pid_update_, last_wheel_update_, last_vel_cmd_ ;
           
