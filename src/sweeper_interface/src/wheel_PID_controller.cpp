@@ -18,28 +18,31 @@ class WheelPID
         WheelPID()
         {
             //create publishers
-            pwr_output_pub_ = n_.advertise<std_msgs::Float32>("~pwr_cmd_", 10);
-            wheel_vel_pub_ = n_.advertise<std_msgs::Float32>("~wheel_vel",10);
+            pwr_output_pub_ = n_.advertise<std_msgs::Float32>("pwr_cmd_", 10);
+            wheel_vel_pub_ = n_.advertise<std_msgs::Float32>("wheel_vel",10);
+            
 
             //create subscribers
-            vel_setpt_sub_ = n_.subscribe("~wheel_cmd_vel",1 , &WheelPID::setPtCB, this);
-            enc_ticks_sub_ = n_.subscribe("~encoder_ticks",1 , &WheelPID::encTicksCB, this);
-            
+            vel_setpt_sub_ = n_.subscribe("wheel_cmd_vel",1 , &WheelPID::setPtCB, this);
+            enc_ticks_sub_ = n_.subscribe("encoder_ticks",1 , &WheelPID::encTicksCB, this);
+      
             //get parameters
-            n_.param<double>("Kp", Kp_, 1.0);
-            n_.param<double>("Ki", Ki_, 0.0);
-            n_.param<double>("Kd", Kd_, 0.0);
-            n_.param<double>("pwr_out_min", pwr_out_min_, 0);
-            n_.param<double>("pwr_out_max", pwr_out_max_, 255);
-            n_.param<double>("wheel_dia", wheel_dia_, 0.06);
-            n_.param<double>("ticks_per_rev", ticks_per_rev_, 1260);
-            n_.param<int>("encoder_min", encoder_min_, -32768);
-            n_.param<int>("encoder_max", encoder_max_, 32768);
-            n_.param<double>("backlash", backlash_, 48);
-            n_.param<double>("windup_limit", windup_limit_, 48);
-            n_.param<double>("min_vel", min_vel_, 0.1);
-            n_.param<double>("vel_cmd_timeout", vel_cmd_timeout_, 0.25);
+            ros::param::param<double>("~Kp", Kp_, 256.0);
+            ros::param::param<double>("~Ki", Ki_, 1.0);
+            ros::param::param<double>("~Kd", Kd_, 1.0);
+            ros::param::param<double>("pwr_out_min", pwr_out_min_, 0);
+            ros::param::param<double>("pwr_out_max", pwr_out_max_, 255);
+            ros::param::param<double>("wheel_dia", wheel_dia_, 0.06);
+            ros::param::param<double>("ticks_per_rev", ticks_per_rev_, 40*13);
+            ros::param::param<int>("encoder_min", encoder_min_, -32768);
+            ros::param::param<int>("encoder_max", encoder_max_, 32768);
+            ros::param::param<double>("backlash", backlash_, 7);
+            ros::param::param<double>("windup_limit", windup_limit_, 1000);
+            ros::param::param<double>("min_vel", min_vel_, 0.1);
+            ros::param::param<double>("vel_cmd_timeout", vel_cmd_timeout_, 10);
+            
             windup_limit_ = fabsf(windup_limit_);
+        
             
             //initialize variables
             
@@ -53,29 +56,40 @@ class WheelPID
             old_ticks_ = 0;
             wheel_latest_ = 0;
             wheel_prev_ = 0;
+            last_pid_update_=0;
+            last_wheel_update_ = 0;
+            last_vel_cmd_=0;
             
             meters_per_tick_ = 3.14159265359*wheel_dia_/ticks_per_rev_;
             encoder_wrap_low_ = (encoder_max_ - encoder_min_)*0.3 + encoder_min_;
             encoder_wrap_high_ = (encoder_max_ - encoder_min_)*0.7 + encoder_min_;
+            
+            
 
         }
         void setPtCB (const std_msgs::Float32 &vel)
         {
             //update setpoint
             target_vel_ = vel.data;
+            last_vel_cmd_ = ros::Time::now().toSec();
+            ROS_DEBUG("Got new target_vel: %f", target_vel_);
         }
         void encTicksCB (const std_msgs::Int16 &new_ticks)
         {
+                       
             //deal with encoder ticks wraparound.
             if(new_ticks.data<encoder_wrap_low_ && old_ticks_ > encoder_wrap_high_)
             {
                 //+1 to the multiplier
                 wrap_mult_ +=1;
+                ROS_DEBUG("New wrap_mult: %d", wrap_mult_);
             }
              if(new_ticks.data>encoder_wrap_high_ && old_ticks_ < encoder_wrap_low_)
             {
                 //-1 to the multiplier
                 wrap_mult_ -=1;
+                ROS_DEBUG("New wrap_mult: %d", wrap_mult_);
+
             }
             wheel_prev_ = wheel_latest_;
             wheel_latest_ = new_ticks.data+wrap_mult_*(encoder_max_-encoder_min_)* meters_per_tick_;
@@ -87,7 +101,7 @@ class WheelPID
             //update pid
             if(ros::Time::now().toSec() - last_vel_cmd_ > vel_cmd_timeout_)
             {
-                target_vel_ = 0;
+                target_vel_ = 0;               
             }
             updatePID();
             
@@ -101,9 +115,15 @@ class WheelPID
         void updatePID()
         {
             //calculate PID_dt
-            float now = ros::Time::now().toSec();
-            float PID_dt = now-last_pid_update_;
-            last_pid_update_ = now;
+            double now = ros::Time::now().toSec();
+            double PID_dt = now-last_pid_update_;
+
+            if(PID_dt == 0)
+            {
+                ROS_ERROR("PID_dt == 0; Skipping loop. now = %f, last = %f", now, last_pid_update_);
+                return;
+            }
+            last_pid_update_ = now;  
             
             //calculate PID terms
             error_ = target_vel_ - cur_vel_;
@@ -122,7 +142,7 @@ class WheelPID
             
             //calculate new output
             pwr_out_ = Kp_*error_ + Ki_*integral_ + Kd_*derivative_;
-            
+           
             //limit output to max/min values
             if (pwr_out_ > pwr_out_max_) 
             {
@@ -136,6 +156,7 @@ class WheelPID
             if (target_vel_ ==0)
             {
                 pwr_out_ = 0;
+               
             }
         }
     
@@ -158,7 +179,9 @@ class WheelPID
             std_msgs::Float32 vel_msg;
             vel_msg.data = cur_vel_;
             wheel_vel_pub_.publish(vel_msg);
+   
         }
+    
     
         //node handle
         ros::NodeHandle n_;
@@ -179,8 +202,8 @@ class WheelPID
         int old_ticks_, wrap_mult_;
         double wheel_latest_, wheel_prev_;
         double vel_cmd_timeout_;
-        double last_pid_update_, last_wheel_update_, last_vel_cmd_ ;
-            
+        double   last_pid_update_, last_wheel_update_, last_vel_cmd_ ;
+          
         //robot parameters
         double wheel_dia_, ticks_per_rev_, meters_per_tick_, backlash_, min_vel_; // wheel diameter [m], ticks per full wheel rotation [ticks], approximate backlash [ticks]
         int encoder_min_, encoder_max_, encoder_wrap_low_, encoder_wrap_high_;
