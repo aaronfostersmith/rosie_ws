@@ -41,8 +41,8 @@ class TwistToVelocity
           std_msgs::Float32 left;
           std_msgs::Float32 right;
             
-          left.data = (dx_-dr_*base_width_)/2;
-          right.data = (dx_+dr_*base_width_)/2;
+          left.data = dx_-dr_*base_width_/2;
+          right.data = dx_+dr_*base_width_/2;
             
           lwheel_vel_pub_.publish(left);
           rwheel_vel_pub_.publish(right);
