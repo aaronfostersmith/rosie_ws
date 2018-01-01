@@ -15,24 +15,24 @@
       <remap from="/lwheel/encoder_ticks" to="/sweeper/lwheel"/>
       <remap from="/lwheel/wheel_cmd_vel" to="/lwheel_cmd_vel"/>
       
-      <param name="Kp" value="2.25"/>
-      <param name="Ki" value="2.25"/>
+      <param name="Kp" value="1.5"/>
+      <param name="Ki" value="2.5"/>
       <param name="Kd" value="0"/>
       
       <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value=".2"/>
+      <param name="windup_limit" value=".375"/>
   </node>
     
   <node pkg="sweeper_interface" type = "wheel_PID_controller" name="rwheel_controller"  output="screen" ns="rwheel">
       <remap from="/rwheel/encoder_ticks" to="/sweeper/rwheel"/>
       <remap from="/rwheel/wheel_cmd_vel" to="/rwheel_cmd_vel"/>
       
-      <param name="Kp" value="2.25"/>
-      <param name="Ki" value="2.25"/>
+      <param name="Kp" value="1.5"/>
+      <param name="Ki" value="2.5"/>
       <param name="Kd" value="0"/>
       
       <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value=".2"/>
+      <param name="windup_limit" value=".375"/>
   </node>
     
   <node pkg="sweeper_interface" type = "twist_to_vel" name="twist_to_vel"  output="screen">

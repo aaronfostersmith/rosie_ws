@@ -153,7 +153,12 @@ class WheelPID
 
               //attempt to delinearize using experimentally derived velocity-voltage curve **note this is a real hacky way of doing this**
 // probably PID control is no good for these motors due to a very non-linear relationship between PWM duty cycle and rpm
-            pwr_out_ = 33.3376*exp(4.675*pwr_out_);
+            bool is_positive = pwr_out_ > 0;
+            pwr_out_ = 33.3376*exp(4.675*fabsf(pwr_out_));            
+            if(!is_positive)
+            {
+		pwr_out_ = -pwr_out_;
+	    }
 
             //limit output to max/min values
             if (pwr_out_ > pwr_out_max_) 
