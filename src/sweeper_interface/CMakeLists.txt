@@ -207,6 +207,10 @@ add_executable(imu_builder src/imu_builder.cpp)
 target_link_libraries(imu_builder ${catkin_LIBRARIES})
 add_dependencies(imu_builder imu_builder_cpp)
 
+add_executable(pose_builder_v2 src/pose_builder_v2.cpp)
+target_link_libraries(pose_builder_v2 ${catkin_LIBRARIES})
+add_dependencies(pose_builder_v2 pose_builder_v2_cpp)
+
 add_executable(wheel_PID_controller src/wheel_PID_controller.cpp)
 target_link_libraries(wheel_PID_controller ${catkin_LIBRARIES})
 add_dependencies(wheel_PID_controller wheel_PID_controller_cpp)

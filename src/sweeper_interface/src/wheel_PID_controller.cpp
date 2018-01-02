@@ -36,7 +36,6 @@ class WheelPID
             ros::param::param<double>("ticks_per_rev", ticks_per_rev_, 40*13);
             ros::param::param<int>("encoder_min", encoder_min_, -32768);
             ros::param::param<int>("encoder_max", encoder_max_, 32768);
-            ros::param::param<double>("backlash", backlash_, 7);
             ros::param::param<double>("~windup_limit", windup_limit_, 255);
             ros::param::param<double>("~min_vel", min_vel_, 0.1);
             ros::param::param<double>("~vel_cmd_timeout", vel_cmd_timeout_, 0.5);
@@ -71,7 +70,7 @@ class WheelPID
             {
                 ROS_DEBUG("Received new velocity: %f", vel.data);
                 target_vel_ = vel.data;
-                integral_ = 0;
+                //integral_ = 0;
             }
             
             last_vel_cmd_ = ros::Time::now().toSec();
@@ -231,7 +230,7 @@ class WheelPID
         double   last_pid_update_, last_wheel_update_, last_vel_cmd_ ;
           
         //robot parameters
-        double wheel_dia_, ticks_per_rev_, meters_per_tick_, backlash_, min_vel_; // wheel diameter [m], ticks per full wheel rotation [ticks], approximate backlash [ticks]
+        double wheel_dia_, ticks_per_rev_, meters_per_tick_, min_vel_; // wheel diameter [m], ticks per full wheel rotation [ticks], approximate backlash [ticks]
         int encoder_min_, encoder_max_, encoder_wrap_low_, encoder_wrap_high_;
     
 };
