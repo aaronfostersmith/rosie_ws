@@ -59,13 +59,38 @@ class WheelPID
             last_wheel_update_ = 0;
             last_vel_cmd_=0;
             
+            
             meters_per_tick_ = 3.14159265359*wheel_dia_/ticks_per_rev_;
             encoder_wrap_low_ = (encoder_max_ - encoder_min_)*0.3 + encoder_min_;
             encoder_wrap_high_ = (encoder_max_ - encoder_min_)*0.7 + encoder_min_;
             
-            loopPID();
+            //start the PID loop
+            loopTimer_ = n_.createTimer(ros::Duration(1.0/loop_rate_), &WheelPID::loopCB, this);
+        }
+    
+     
+      
+    private:
+    
+     void loopCB(const ros::TimerEvent&)
+        {
+                            ROS_DEBUG("PID Looping");
+
+                //update pid
+                if(ros::Time::now().toSec() - last_vel_cmd_ > vel_cmd_timeout_)
+                {
+                target_vel_ = 0;           
+                integral_=0;
+                }
+                updatePID();
+
+                //publish output pwr
+                std_msgs::Float32 pwr_out_msg;
+                pwr_out_msg.data = pwr_out_;
+                pwr_output_pub_.publish(pwr_out_msg);
 
         }
+            
         void setPtCB (const std_msgs::Float32 &vel)
         {
             //update setpoint
@@ -105,27 +130,8 @@ class WheelPID
             updateVel();                 
           
         }
-    private:
-        void loopPID()
-        {
-            ros::Rate r(loop_rate_);
-            while (ros::ok())
-            {
-                //update pid
-                if(ros::Time::now().toSec() - last_vel_cmd_ > vel_cmd_timeout_)
-                {
-                target_vel_ = 0;           
-                integral_=0;
-                }
-                updatePID();
-
-                //publish output pwr
-                std_msgs::Float32 pwr_out_msg;
-                pwr_out_msg.data = pwr_out_;
-                pwr_output_pub_.publish(pwr_out_msg);
-                r.sleep();
-            }
-        }
+    
+      
     
         void updatePID()
         {
@@ -229,6 +235,9 @@ class WheelPID
         //subs
         ros::Subscriber vel_setpt_sub_;
         ros::Subscriber enc_ticks_sub_;
+    
+        //PID loop timer
+        ros::Timer loopTimer_;
     
         //PID parameters
         double Kp_,Ki_,Kd_;
