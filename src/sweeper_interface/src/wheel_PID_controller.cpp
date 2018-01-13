@@ -30,13 +30,14 @@ class WheelPID
             ros::param::param<double>("~Kp", Kp_, 256.0);
             ros::param::param<double>("~Ki", Ki_, 1.0);
             ros::param::param<double>("~Kd", Kd_, 1.0);
-            ros::param::param<double>("pwr_out_min", pwr_out_min_, -255);
-            ros::param::param<double>("pwr_out_max", pwr_out_max_, 255);
-            ros::param::param<double>("wheel_dia", wheel_dia_, 0.075);
-            ros::param::param<double>("ticks_per_rev", ticks_per_rev_, 40*13);
-            ros::param::param<int>("encoder_min", encoder_min_, -32768);
-            ros::param::param<int>("encoder_max", encoder_max_, 32768);
-            ros::param::param<double>("~windup_limit", windup_limit_, 255);
+            ros::param::param<double>("~pwr_out_min", pwr_out_min_, -255);
+            ros::param::param<double>("~pwr_out_max", pwr_out_max_, 255);
+            ros::param::param<double>("~wheel_dia", wheel_dia_, 0.075);
+            ros::param::param<double>("~ticks_per_rev", ticks_per_rev_, 40*13);
+            ros::param::param<int>("~encoder_min", encoder_min_, -32768);
+            ros::param::param<int>("~encoder_max", encoder_max_, 32768);
+            ros::param::param<int>("~loop_rate", loop_rate_, 10);
+            ros::param::param<double>("~windup_limit", windup_limit_, 0.5);
             ros::param::param<double>("~min_vel", min_vel_, 0.1);
             ros::param::param<double>("~vel_cmd_timeout", vel_cmd_timeout_, 0.5);
             
@@ -101,21 +102,30 @@ class WheelPID
             //estimate current velocity
             updateVel();
                       
-            //update pid
-            if(ros::Time::now().toSec() - last_vel_cmd_ > vel_cmd_timeout_)
-            {
-                target_vel_ = 0;           
-                integral_=0;
-            }
-            updatePID();
-            
-            //publish output pwr
-            std_msgs::Float32 pwr_out_msg;
-            pwr_out_msg.data = pwr_out_;
-            pwr_output_pub_.publish(pwr_out_msg);
-            
+          
         }
     private:
+        void loopPID()
+        {
+            ros::Rate r(loop_rate_);
+            while (ros::ok())
+            {
+                //update pid
+                if(ros::Time::now().toSec() - last_vel_cmd_ > vel_cmd_timeout_)
+                {
+                target_vel_ = 0;           
+                integral_=0;
+                }
+                updatePID();
+
+                //publish output pwr
+                std_msgs::Float32 pwr_out_msg;
+                pwr_out_msg.data = pwr_out_;
+                pwr_output_pub_.publish(pwr_out_msg);
+                r.sleep();
+            }
+        }
+    
         void updatePID()
         {
             //calculate PID_dt
@@ -156,8 +166,8 @@ class WheelPID
             pwr_out_ = 33.3376*exp(4.675*fabsf(pwr_out_));            
             if(!is_positive)
             {
-		pwr_out_ = -pwr_out_;
-	    }
+		        pwr_out_ = -pwr_out_;
+	        }
 
             //limit output to max/min values
             if (pwr_out_ > pwr_out_max_) 
@@ -224,6 +234,7 @@ class WheelPID
         double pwr_out_min_, pwr_out_max_, windup_limit_;
         double target_vel_, cur_vel_, pwr_out_;  //groundspeed setpoint r(t) [m/s], current groundspeed process variable y(t) [m/s], power output control variable u(t) [0-255]
         double error_, integral_, derivative_, prev_error_;
+        int loop_rate_;
         int old_ticks_, wrap_mult_;
         int wheel_latest_, wheel_prev_;
         double vel_cmd_timeout_;
