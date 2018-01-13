@@ -62,6 +62,8 @@ class WheelPID
             meters_per_tick_ = 3.14159265359*wheel_dia_/ticks_per_rev_;
             encoder_wrap_low_ = (encoder_max_ - encoder_min_)*0.3 + encoder_min_;
             encoder_wrap_high_ = (encoder_max_ - encoder_min_)*0.7 + encoder_min_;
+            
+            loopPID();
 
         }
         void setPtCB (const std_msgs::Float32 &vel)
@@ -100,8 +102,7 @@ class WheelPID
            
             
             //estimate current velocity
-            updateVel();
-                      
+            updateVel();                 
           
         }
     private:

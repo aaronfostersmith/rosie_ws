@@ -38,7 +38,7 @@ unsigned long lastImuUpdate = 0;
 #include <sweeper_interface/Imu_bytes.h>
 #include <std_msgs/Int16.h>
 
-const unsigned int spinPeriod = 100; //us
+const unsigned int spinPeriod = 100; //ms
 const unsigned int paramUpdatePeriod = 1000;
 
 //tracking for timing
