@@ -49,6 +49,8 @@
   <node pkg="sweeper_interface" type = "imu_builder" name="imu_builder">
   </node>
 
+  <node pkg="sweeper_interface" type = "pose_builder_v2" name="pose_builder">
+  </node>
 
   <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick" output="screen" respawn="false" >
     <param name="world_frame" value="enu" />
