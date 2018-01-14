@@ -16,8 +16,8 @@ class PoseBuilder
             pose_pub_ = n_.advertise<geometry_msgs::PoseWithCovarianceStamped>("/odom/encPose", 10);
             
             //subscribers
-            lwheel_sub_ = n_.subscribe("/lwheel_ticks",1, &PoseBuilder::lwheelCB, this);
-            rwheel_sub_ = n_.subscribe("/rwheel_ticks",1, &PoseBuilder::rwheelCB, this);
+            lwheel_sub_ = n_.subscribe("lwheel_ticks",1, &PoseBuilder::lwheelCB, this);
+            rwheel_sub_ = n_.subscribe("rwheel_ticks",1, &PoseBuilder::rwheelCB, this);
             
             //get parameters and set default values
             ros::param::param<int>("~ticks_per_rev", ticks_per_rev_, 40*13);
