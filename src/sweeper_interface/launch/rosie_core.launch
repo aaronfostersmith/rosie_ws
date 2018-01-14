@@ -50,6 +50,8 @@
   </node>
 
   <node pkg="sweeper_interface" type = "pose_builder_v2" name="pose_builder">
+    <remap from="/lwheel_ticks" to="/sweeper/lwheel"/>
+    <remap from="/rwheel_ticks" to="/sweeper/rwheel"/>
   </node>
 
   <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick" output="screen" respawn="false" >
@@ -66,7 +68,7 @@
       <param name="sensor_timeout" value="0.5"/>
       <param name="two_d_mode" value="true"/>
 
-      <param name="imu0" value="/imu/data"/>  
+      <!--param name="imu0" value="/imu/data"/ -->  
 
       <param name="pose0" value="/odom/encPose"/>
       <!--param name="pose0_differential" value="true" /-->
@@ -84,13 +86,13 @@
                                     false, false, false]</rosparam>
 
         
-	<rosparam param="imu0_config">[false, false, false, 
+	<!--rosparam param="imu0_config">[false, false, false, 
                                    false, false, true, 
                                    false, false, false, 
                                    false, false, true,
                                    false, false, false]</rosparam>
 
-      <param name="print_diagnostics" value="true"/>
+      <param name="print_diagnostics" value="true"/ -->
 
 
   </node>

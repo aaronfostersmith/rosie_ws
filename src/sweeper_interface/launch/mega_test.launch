@@ -11,6 +11,8 @@
   </node>
     
   <node pkg="sweeper_interface" type = "pose_builder_v2" name="pose_builder">
+    <remap from="/lwheel_ticks" to="/sweeper/lwheel"/>
+    <remap from="/rwheel_ticks" to="/sweeper/rwheel"/>
   </node>
     
   <node pkg="rosserial_python" type="serial_node.py" name="mega_node">
