@@ -148,12 +148,12 @@ class WheelPID
             error_ = target_vel_ - cur_vel_;
             integral_ = integral_+error_*PID_dt;
             //apply windup limit
-            if (integral_ > windup_limit_)
+            if (integral_*Ki_ > windup_limit_)
             {
                 integral_ = windup_limit_;
                 ROS_DEBUG("Integral windup limit reached integral_: %f", integral_);
             }
-            if (integral_ < -windup_limit_)
+            if (integral_*Ki_ < -windup_limit_)
             {
                 integral_ = -windup_limit_;
                 ROS_DEBUG("Integral windup limit reached integral_: %f", integral_);
@@ -163,9 +163,10 @@ class WheelPID
             
             //calculate new output
             pwr_out_ = Kp_*error_ + Ki_*integral_ + Kd_*derivative_;
-            ROS_DEBUG("error,integral,derivative: %f,%f,%f",error_, integral_, derivative_);
-
-            //feed forward using experimentally derived velocity-voltage curve 
+            //ROS_DEBUG("error,integral,derivative: %f,%f,%f",error_, integral_, derivative_);
+		 	ROS_DEBUG("pwr_out before feed fwd: %f", pwr_out_);
+         
+	        //feed forward using experimentally derived velocity-voltage curve 
             int feed_fwd_pwr = 100+33.3376*exp(4.675*fabsf(target_vel_));            
             if(target_vel_ < 0)
             {
