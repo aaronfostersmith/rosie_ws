@@ -74,8 +74,6 @@ class WheelPID
     
      void loopCB(const ros::TimerEvent&)
         {
-                            ROS_DEBUG("PID Looping");
-
                 //update pid
                 if(ros::Time::now().toSec() - last_vel_cmd_ > vel_cmd_timeout_)
                 {
@@ -167,14 +165,15 @@ class WheelPID
             pwr_out_ = Kp_*error_ + Ki_*integral_ + Kd_*derivative_;
             ROS_DEBUG("error,integral,derivative: %f,%f,%f",error_, integral_, derivative_);
 
-              //attempt to delinearize using experimentally derived velocity-voltage curve **note this is a real hacky way of doing this**
-// probably PID control is no good for these motors due to a very non-linear relationship between PWM duty cycle and rpm
-            bool is_positive = pwr_out_ > 0;
-            pwr_out_ = 33.3376*exp(4.675*fabsf(pwr_out_));            
-            if(!is_positive)
+            //feed forward using experimentally derived velocity-voltage curve 
+            int feed_fwd_pwr = 100+33.3376*exp(4.675*fabsf(target_vel_));            
+            if(target_vel_ < 0)
             {
-		        pwr_out_ = -pwr_out_;
-	        }
+		        pwr_out_ -= feed_fwd_pwr;
+	        }else
+            {
+                pwr_out_ += feed_fwd_pwr;
+            }
 
             //limit output to max/min values
             if (pwr_out_ > pwr_out_max_) 
