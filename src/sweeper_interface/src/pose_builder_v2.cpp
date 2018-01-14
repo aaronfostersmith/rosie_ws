@@ -43,7 +43,8 @@ class PoseBuilder
             encoder_wrap_low_ = (encoder_max_ - encoder_min_)*0.3 + encoder_min_;
             encoder_wrap_high_ = (encoder_max_ - encoder_min_)*0.7 + encoder_min_;
             
-            posePublisher();
+            //start the PID loop
+            pubTimer_ = n_.createTimer(ros::Duration(1.0/pub_rate_), &PoseBuilder::posePubCB, this);
         }
     
         void lwheelCB(const std_msgs::Int16 &new_ticks_l)
@@ -86,7 +87,7 @@ class PoseBuilder
         }
     
     private:
-        void posePublisher()
+        void posePubCB(const ros::TimerEvent&)
         {
             geometry_msgs::PoseWithCovarianceStamped t;
             //set some of the data which doesn't change
@@ -113,25 +114,22 @@ class PoseBuilder
             t.pose.covariance[0] = 0.001; 
             t.pose.covariance[7] = 0.001; 
             t.pose.covariance[35] = 0.001; }
-            ros::Rate r(pub_rate_);
-            while(n_.ok())
-            {
+           
                 //since all odometry is 6DOF we'll need a quaternion created from yaw
                 // geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
 
                 //time stamp
                 t.header.stamp = ros::Time::now();
                 //set the position
+                updatePose();
                 t.pose.pose.position.x = x_;
                 t.pose.pose.position.y = y_;
                 t.pose.pose.orientation = tf::createQuaternionMsgFromYaw(th_);
 
                 //publish the message
                 pose_pub_.publish(t);
-                ros::spinOnce();
-                r.sleep();
-            }
         }
+    
         void updatePose()
         {
             double d_left = (wheel_latest_l_ - wheel_prev_l_)*meters_per_tick_;
@@ -166,6 +164,9 @@ class PoseBuilder
     //subs
     ros::Subscriber lwheel_sub_;
     ros::Subscriber rwheel_sub_;
+    
+    //timer
+    ros::Timer pubTimer_;
     
     //parameters
     int ticks_per_rev_, encoder_min_, encoder_max_, backlash_, pub_rate_;
