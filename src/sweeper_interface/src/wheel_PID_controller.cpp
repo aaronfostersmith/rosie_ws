@@ -33,7 +33,7 @@ class WheelPID
             ros::param::param<double>("~pwr_out_min", pwr_out_min_, -255);
             ros::param::param<double>("~pwr_out_max", pwr_out_max_, 255);
             ros::param::param<double>("~wheel_dia", wheel_dia_, 0.075);
-            ros::param::param<double>("~ticks_per_rev", ticks_per_rev_, 40*13);
+            ros::param::param<double>("~ticks_per_rev", ticks_per_rev_, 720);
             ros::param::param<int>("~encoder_min", encoder_min_, -32768);
             ros::param::param<int>("~encoder_max", encoder_max_, 32768);
             ros::param::param<int>("~loop_rate", loop_rate_, 10);
@@ -94,7 +94,7 @@ class WheelPID
             //update setpoint
             if(vel.data != target_vel_ )
             {
-                ROS_DEBUG("Received new velocity: %f", vel.data);
+                //ROS_DEBUG("Received new velocity: %f", vel.data);
                 target_vel_ = vel.data;
                 //integral_ = 0;
             }
@@ -150,12 +150,12 @@ class WheelPID
             //apply windup limit
             if (integral_*Ki_ > windup_limit_)
             {
-                integral_ = windup_limit_;
+                integral_ = windup_limit_/Ki_;
                 ROS_DEBUG("Integral windup limit reached integral_: %f", integral_);
             }
             if (integral_*Ki_ < -windup_limit_)
             {
-                integral_ = -windup_limit_;
+                integral_ = -windup_limit_/Ki_;
                 ROS_DEBUG("Integral windup limit reached integral_: %f", integral_);
             }
             derivative_  = (error_ - prev_error_)/PID_dt;
@@ -163,11 +163,16 @@ class WheelPID
             
             //calculate new output
             pwr_out_ = Kp_*error_ + Ki_*integral_ + Kd_*derivative_;
-            //ROS_DEBUG("error,integral,derivative: %f,%f,%f",error_, integral_, derivative_);
-		 	ROS_DEBUG("pwr_out before feed fwd: %f", pwr_out_);
+
+		 	
          
 	        //feed forward using experimentally derived velocity-voltage curve 
-            int feed_fwd_pwr = 100+33.3376*exp(4.675*fabsf(target_vel_));            
+            int feed_fwd_pwr = 0;
+			if(target_vel_ != 0)
+			{
+				feed_fwd_pwr = 100+33.3376*exp(4.675*fabsf(target_vel_));
+			}
+    
             if(target_vel_ < 0)
             {
 		        pwr_out_ -= feed_fwd_pwr;
@@ -188,7 +193,9 @@ class WheelPID
                 pwr_out_ = pwr_out_min_;
                 ROS_DEBUG("power output limit reached pwr_out_max_: %f", pwr_out_max_);
             }
-            
+
+            ROS_DEBUG("e,i,d,ff, po: %f,%f,%f,%d,%f",error_, integral_, derivative_, feed_fwd_pwr, pwr_out_);                        
+
             if (target_vel_ ==0)
             {
                 pwr_out_ = 0;
