@@ -27,7 +27,11 @@
       <param name="Kd" value="0"/>
       
       <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="50"/>
+      <param name="windup_limit" value="75"/>
+	  <param name="min_vel" value="0.025"/>
+      <param name="windup_limit" value="100"/>
+	  <param name="wheel_dia" value="0.08" />
+	  <param name="ticks_per_rev" value="720" />
   </node>
     
   <node pkg="sweeper_interface" type = "wheel_PID_controller" name="rwheel_controller"  output="screen" ns="rwheel">
@@ -39,7 +43,11 @@
       <param name="Kd" value="0"/>
       
       <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="50"/>
+      <param name="windup_limit" value="75"/>
+	  <param name="min_vel" value="0.025"/>
+      <param name="windup_limit" value="100"/>
+	  <param name="wheel_dia" value="0.08" />
+	  <param name="ticks_per_rev" value="720" />
   </node>
     
   <node pkg="sweeper_interface" type = "twist_to_vel" name="twist_to_vel"  output="screen">
@@ -52,6 +60,10 @@
   <node pkg="sweeper_interface" type = "pose_builder_v2" name="pose_builder">
     <remap from="/lwheel_ticks" to="/sweeper/lwheel"/>
     <remap from="/rwheel_ticks" to="/sweeper/rwheel"/>
+
+    <param name="base_width" value="0.2" />
+    <param name="wheel_diameter" value="0.08" />
+	<param name="ticks_per_rev" value="720" />
   </node>
 
   <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter_madgwick" output="screen" respawn="false" >
