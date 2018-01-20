@@ -27,7 +27,7 @@
       <param name="Kd" value="0"/>
       
       <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="75"/>
+      <param name="windup_limit" value="100"/>
 	  <param name="min_vel" value="0.025"/>
       <param name="windup_limit" value="100"/>
 	  <param name="wheel_dia" value="0.08" />
@@ -42,8 +42,6 @@
       <param name="Ki" value="600"/>
       <param name="Kd" value="0"/>
       
-      <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="75"/>
 	  <param name="min_vel" value="0.025"/>
       <param name="windup_limit" value="100"/>
 	  <param name="wheel_dia" value="0.08" />
@@ -80,10 +78,10 @@
       <param name="sensor_timeout" value="0.5"/>
       <param name="two_d_mode" value="true"/>
 
-      <!--param name="imu0" value="/imu/data"/ -->  
+      <param name="imu0" value="/imu/data"/>  
 
       <param name="pose0" value="/odom/encPose"/>
-      <!--param name="pose0_differential" value="true" /-->
+      <!--param name="pose0_differential" value="true" / -->
 
 	  
       <param name="map_frame" value="map"/>
@@ -98,13 +96,13 @@
                                     false, false, false]</rosparam>
 
         
-	<!--rosparam param="imu0_config">[false, false, false, 
-                                   false, false, true, 
+	<rosparam param="imu0_config">[false, false, false, 
+                                   false, false, false, 
                                    false, false, false, 
                                    false, false, true,
                                    false, false, false]</rosparam>
 
-      <param name="print_diagnostics" value="true"/ -->
+      <param name="print_diagnostics" value="true"/>
 
 
   </node>

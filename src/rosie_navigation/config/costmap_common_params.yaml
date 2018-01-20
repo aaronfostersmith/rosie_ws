@@ -5,12 +5,11 @@ raytrace_range: 1.250
 
 inf_is_valid: true
 
-footprint: [[0.10, -0.125], [-0.2,-0.125], [-0.2, 0.125], [0.10, 0.125]]
+footprint: [[0.05, -0.125], [0.05, 0.125], [-0.2, -0.125], [-0.2, 0.125]]
 footprint_padding: 0.005
 
-inflation_radius: 0.3
-cost_scaling_factor: 5
-lethal_cost_threshold: 100
+inflation_radius: 0.2
+cost_scaling_factor: 0.5
 
 observation_sources: laser_scan_sensor #point_cloud_sensor
 
