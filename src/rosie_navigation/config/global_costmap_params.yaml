@@ -7,4 +7,6 @@ global_costmap:
   publish_frequency: 0.5
   resolution: 0.05
   static_map: true
+  rolling_window: false
+  unknown_cost_value: 255
 

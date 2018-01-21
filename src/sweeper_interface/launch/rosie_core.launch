@@ -22,14 +22,12 @@
       <remap from="/lwheel/encoder_ticks" to="/sweeper/lwheel"/>
       <remap from="/lwheel/wheel_cmd_vel" to="/lwheel_cmd_vel"/>
       
-      <param name="Kp" value="500"/>
+      <param name="Kp" value="600"/>
       <param name="Ki" value="600"/>
       <param name="Kd" value="0"/>
       
       <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="100"/>
-	  <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="100"/>
+      <param name="windup_limit" value="125"/>
 	  <param name="wheel_dia" value="0.08" />
 	  <param name="ticks_per_rev" value="720" />
   </node>
@@ -38,12 +36,12 @@
       <remap from="/rwheel/encoder_ticks" to="/sweeper/rwheel"/>
       <remap from="/rwheel/wheel_cmd_vel" to="/rwheel_cmd_vel"/>
       
-      <param name="Kp" value="500"/>
+      <param name="Kp" value="600"/>
       <param name="Ki" value="600"/>
       <param name="Kd" value="0"/>
       
 	  <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="100"/>
+      <param name="windup_limit" value="125"/>
 	  <param name="wheel_dia" value="0.08" />
 	  <param name="ticks_per_rev" value="720" />
   </node>
@@ -79,9 +77,10 @@
       <param name="two_d_mode" value="true"/>
 
       <param name="imu0" value="/imu/data"/>  
+      <param name="imu0_differential" value="true" />
 
       <param name="pose0" value="/odom/encPose"/>
-      <!--param name="pose0_differential" value="true" / -->
+
 
 	  
       <param name="map_frame" value="map"/>
