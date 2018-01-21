@@ -3,11 +3,11 @@
   <node pkg="rosserial_python" type="serial_node.py" name="turret_node">
     <param name="port" value="/dev/ttyUSB0"/>
     <param name="baud" value="57600"/>
-    <param name="num_pts" value="64"/>
+    <param name="num_pts" value="96"/>
   </node>
 
   <node pkg="sweeper_interface" type = "laser_builder" name="laser_builder">
-    <param name="num_pts" value="64"/>
+    <param name="num_pts" value="96"/>
   </node>
     
   <node pkg="rosserial_python" type="serial_node.py" name="mega_node">
@@ -23,11 +23,11 @@
       <remap from="/lwheel/wheel_cmd_vel" to="/lwheel_cmd_vel"/>
       
       <param name="Kp" value="600"/>
-      <param name="Ki" value="600"/>
+      <param name="Ki" value="300"/>
       <param name="Kd" value="0"/>
       
       <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="125"/>
+      <param name="windup_limit" value="75"/>
 	  <param name="wheel_dia" value="0.08" />
 	  <param name="ticks_per_rev" value="720" />
   </node>
@@ -37,17 +37,17 @@
       <remap from="/rwheel/wheel_cmd_vel" to="/rwheel_cmd_vel"/>
       
       <param name="Kp" value="600"/>
-      <param name="Ki" value="600"/>
+      <param name="Ki" value="300"/>
       <param name="Kd" value="0"/>
       
 	  <param name="min_vel" value="0.025"/>
-      <param name="windup_limit" value="125"/>
+      <param name="windup_limit" value="75"/>
 	  <param name="wheel_dia" value="0.08" />
 	  <param name="ticks_per_rev" value="720" />
   </node>
     
   <node pkg="sweeper_interface" type = "twist_to_vel" name="twist_to_vel"  output="screen">
-      <param name="base_width" value="0.150"/>
+      <param name="base_width" value="0.130"/>
   </node>
 
   <node pkg="sweeper_interface" type = "imu_builder" name="imu_builder">
@@ -96,7 +96,7 @@
 
         
 	<rosparam param="imu0_config">[false, false, false, 
-                                   false, false, false, 
+                                   false, false, true, 
                                    false, false, false, 
                                    false, false, true,
                                    false, false, false]</rosparam>
