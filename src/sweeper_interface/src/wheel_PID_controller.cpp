@@ -40,7 +40,8 @@ class WheelPID
             ros::param::param<double>("~windup_limit", windup_limit_, 0.5);
             ros::param::param<double>("~min_vel", min_vel_, 0.1);
             ros::param::param<double>("~vel_cmd_timeout", vel_cmd_timeout_, 0.5);
-            
+            ros::param::param<double>("~lpf_f", lpf_f_, 5);//default ~5 hz cutoff
+
             windup_limit_ = fabsf(windup_limit_);        
             
             //initialize variables
@@ -55,6 +56,7 @@ class WheelPID
             old_ticks_ = 0;
             wheel_latest_ = 0;
             wheel_prev_ = 0;
+			wrap_mult_ = 0;
             last_pid_update_=0;
             last_wheel_update_ = 0;
             last_vel_cmd_=0;
@@ -123,7 +125,6 @@ class WheelPID
 
             wheel_latest_ = new_ticks.data+wrap_mult_*(encoder_max_-encoder_min_);
            
-            
             //estimate current velocity
             updateVel();                 
           
@@ -194,7 +195,7 @@ class WheelPID
                 ROS_DEBUG("power output limit reached pwr_out_max_: %f", pwr_out_max_);
             }
 
-            ROS_DEBUG("e,i,d,ff, po: %f,%f,%f,%d,%f",error_, integral_, derivative_, feed_fwd_pwr, pwr_out_);                        
+            //ROS_DEBUG("e,i,d,ff, po: %f,%f,%f,%d,%f",error_, integral_, derivative_, feed_fwd_pwr, pwr_out_);                        
 
             if (target_vel_ ==0)
             {
@@ -206,23 +207,21 @@ class WheelPID
 
         void updateVel()
         {
-            //estimate velocity from meters_per_tick and dt
+			
+		    //estimate velocity from meters_per_tick and dt
             float dt = ros::Time::now().toSec() - last_wheel_update_;
             
-                
+			  
             if(wheel_latest_ == wheel_prev_) //low velocity
-            {
-                if(meters_per_tick_/dt < min_vel_)
-                {
+            {   
                     cur_vel_ = 0;
-                    //ROS_DEBUG("Estimated velocity is too low: setting velocity to 0");
-
-                }
             }else
             {
+
                 last_wheel_update_  = ros::Time::now().toSec();
-                cur_vel_ = ((wheel_latest_ - wheel_prev_)*meters_per_tick_/dt);
+                cur_vel_ += dt*lpf_f_*(((wheel_latest_ - wheel_prev_)*meters_per_tick_/dt)-cur_vel_);
                 wheel_prev_ = wheel_latest_;
+
             }
             
             std_msgs::Float32 vel_msg;
@@ -256,6 +255,7 @@ class WheelPID
         int wheel_latest_, wheel_prev_;
         double vel_cmd_timeout_;
         double   last_pid_update_, last_wheel_update_, last_vel_cmd_ ;
+        double lpf_f_;
           
         //robot parameters
         double wheel_dia_, ticks_per_rev_, meters_per_tick_, min_vel_; // wheel diameter [m], ticks per full wheel rotation [ticks], approximate backlash [ticks]
