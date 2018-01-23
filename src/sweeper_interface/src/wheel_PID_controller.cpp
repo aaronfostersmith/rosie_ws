@@ -3,6 +3,10 @@
 /*
 * Receives the number of encoder ticks as std_msgs/int16 and estimates wheel velocity.
 *  Uses PID to match wheel velocity to set point (std_msgs/Float32
+
+//TODO implement feed-forward autotune (in independant program?) by sampling velocity at different power levels and interpolating a curve?
+//or 2. by dynamically building a curve and interpolating. <<- Biggest roadblock is how to determine if PID is "Settled" (maybe look at slope of power vs velocity in a moving window?). Also how to store/prune data points?
+
 */
 
 #include "ros/ros.h"
