@@ -1,7 +1,7 @@
 map_type: ObstacleLayer
 
-obstacle_range: 1.000
-raytrace_range: 1.250
+obstacle_range: 1.25
+raytrace_range: 1.6
 
 inf_is_valid: true
 

@@ -5,18 +5,18 @@
   
   <xacro:property name="PI" value="3.1415926535897931"/>
   
-  <xacro:property name="chassisHeight" value="0.060"/>
-  <xacro:property name="chassisWidth" value="0.240"/>
-  <xacro:property name="chassisLength" value="0.3"/>
+  <xacro:property name="chassisHeight" value="0.095"/>
+  <xacro:property name="chassisWidth" value="0.250"/>
+  <xacro:property name="chassisLength" value="0.250"/>
   <xacro:property name="chassisMass" value="4"/>
   <xacro:property name="groundClearance" value="0.01"/>
   
-  <xacro:property name="casterRadius" value="0.02"/>
+  <xacro:property name="casterRadius" value="0.025"/>
   <xacro:property name="casterMass" value="0.025"/>
   
-  <xacro:property name="wheelRadius" value="0.030"/>
-  <xacro:property name="wheelWidth" value="0.025"/>  
-  <xacro:property name="wheelBase" value="0.185"/>
+  <xacro:property name="wheelRadius" value="0.040"/>
+  <xacro:property name="wheelWidth" value="0.020"/>  
+  <xacro:property name="wheelBase" value="0.200"/>
   <xacro:property name="wheelMass" value="0.05"/>  
   
   <xacro:include filename="$(find rosie_description)/urdf/rosie.gazebo" />
@@ -49,7 +49,7 @@
   
   <link name="caster_wheel"> 
     <collision>   
-      <origin xyz="-0.125 0 ${casterRadius-(chassisHeight/2+groundClearance)}" rpy="0 0 0"/>
+      <origin xyz="-0.145 0 ${casterRadius-(chassisHeight/2+groundClearance)}" rpy="0 0 0"/>
       <geometry> 
         <sphere radius="${casterRadius}"/> 
       </geometry> 
@@ -105,7 +105,7 @@
 
   <joint name="hokuyo_joint" type="fixed">
     <!--axis xyz="0 1 0" />-->
-    <origin xyz=".07 0 .06" rpy="0 0 0"/>
+    <origin xyz=".05 0 .12" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="hokuyo"/>
   </joint>
@@ -135,7 +135,7 @@
   </link>
 	
   <joint name="imu_joint" type="fixed">
-    <origin xyz="-0.070 -0.045 -0.01" rpy="0 0 0"/>
+    <origin xyz="-0.040 -0.085 -0.03" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="imu_link"/>
   </joint>

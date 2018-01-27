@@ -39,7 +39,7 @@ int TIME_INCREMENT = 25000; // us WHY CAN"T GO OVER 30000? OVERFLOW?
 int N;
 
 #define RANGE_MIN 0.02 //meters
-#define RANGE_MAX 1.00 //meters
+#define RANGE_MAX 1.5 //meters
 
 
 //instantiate a handle for the node
