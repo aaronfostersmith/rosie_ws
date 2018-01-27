@@ -5,12 +5,12 @@
 <param name="/use_sim_time" value="false"/>
   <!--- Run gmapping -->
   <node pkg="gmapping" name="slam_gmapping" type="slam_gmapping" output="screen">
-    <param name="delta" value="0.04"/>
-    <param name="xmin" value="-20"/>
-    <param name="xmax" value="20"/>
-    <param name="ymin" value="-20"/>
-    <param name="ymax" value="20"/>
-    <param name="minimumScore" value="15" />
+    <param name="delta" value="0.05"/>
+    <param name="xmin" value="-10"/>
+    <param name="xmax" value="10"/>
+    <param name="ymin" value="-10"/>
+    <param name="ymax" value="10"/>
+    <param name="minimumScore" value="25" />
     <remap from="scan" to="/scan"/>
     <param name="maxRange" value="1.005" />
     <param name="maxUrange" value="1.00" />
@@ -36,7 +36,7 @@
 	<!--rosparam file="$(find rosie_navigation)/config/dwa_local_planner_params.yaml" command="load" />
     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" /-->
   
-    <param name="controller_frequency" value="10" />
+    <param name="controller_frequency" value="2" />
     <param name="planner_frequency" value="1.0" />
   
     <remap from="odom" to="/odometry/filtered"/>
