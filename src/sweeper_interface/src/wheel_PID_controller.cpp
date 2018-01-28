@@ -175,16 +175,16 @@ class WheelPID
             int feed_fwd_pwr = 0;
 			if(target_vel_ != 0)
 			{
-				feed_fwd_pwr = 100+33.3376*exp(4.675*fabsf(target_vel_));
+				feed_fwd_pwr = 579.071032*fabs(target_vel_)+116.5979;
 			}
-    
-            if(target_vel_ < 0)
-            {
-		        pwr_out_ -= feed_fwd_pwr;
-	        }else
-            {
-                pwr_out_ += feed_fwd_pwr;
-            }
+                
+			if(target_vel_ > 0){			
+				pwr_out_ += feed_fwd_pwr;
+			}
+			else
+			{
+				pwr_out_ -= feed_fwd_pwr;
+			}
 
             //limit output to max/min values
             if (pwr_out_ > pwr_out_max_) 
